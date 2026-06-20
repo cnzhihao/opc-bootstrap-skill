@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPC 冷启动组合技能包</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   === viewport-base.css 全量内嵌(强制固定舞台) ===
+   ============================================================ */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#d8dde2}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:#d8dde2}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:#f4f6f8}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1}
+img,video,canvas,svg{max-width:100%;max-height:100%}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;background:#fff}
+  .deck-viewport{position:static;overflow:visible;background:#fff}
+  .deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none}
+  .slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always}
+  .slide:last-child{break-after:auto;page-break-after:auto}
+  .deck-controls{display:none!important}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important}}
+
+/* ============================================================
+   === 设计令牌 · Operating Console 设计系统 ===
+   ============================================================ */
+:root{
+  --surface:#f4f6f8;
+  --surface-2:#e9edf1;
+  --panel:#ffffff;
+  --ink:#0d1b2a;
+  --ink-2:#2a3a4d;
+  --muted:#6b7888;
+  --line:#d2dae3;
+  --line-2:#e4e9ee;
+  --teal:#0d7377;
+  --teal-bright:#14b8a6;
+  --teal-soft:rgba(13,115,119,.08);
+  --teal-soft-2:rgba(13,115,119,.12);
+  --amber:#e8893f;
+  --amber-soft:rgba(232,137,63,.12);
+  --rose:#d65d7a;
+  --code:#0d1b2a;
+  --code-2:#16273a;
+}
+
+/* ============================================================
+   === 通用舞台元素 ===
+   ============================================================ */
+.slide{background:var(--surface);font-family:'Manrope','Noto Sans SC',sans-serif;color:var(--ink)}
+
+/* 背景网格 */
+.grid-bg::before{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.5;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);
+  mask-image:linear-gradient(180deg,transparent,#000 25%,#000 75%,transparent);
+  pointer-events:none;
+}
+
+/* 顶部状态栏 */
+.statusbar{position:absolute;top:0;left:0;right:0;height:54px;background:var(--ink);color:var(--surface);display:flex;align-items:center;padding:0 60px;gap:24px;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.08em;z-index:5}
+.statusbar .live{display:flex;align-items:center;gap:10px;color:var(--teal-bright)}
+.statusbar .live .pulse{width:9px;height:9px;border-radius:50%;background:var(--teal-bright);box-shadow:0 0 0 0 rgba(20,184,166,.7);animation:pulse 2.5s infinite}
+.statusbar .sep{opacity:.35}
+.statusbar .crumbs{display:flex;gap:14px;align-items:center}
+.statusbar .crumbs b{color:#fff;font-weight:500}
+.statusbar .crumbs .cur{color:var(--teal-bright)}
+.statusbar .right{margin-left:auto;opacity:.65}
+
+/* 左侧导航 */
+.sidenav{position:absolute;left:0;top:54px;bottom:0;width:268px;background:var(--panel);border-right:1px solid var(--line);padding:44px 0;z-index:4}
+.sidenav .logo{padding:0 36px 36px;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;color:var(--muted);border-bottom:1px solid var(--line-2);margin-bottom:24px}
+.sidenav .logo b{color:var(--ink);font-weight:600}
+.sidenav .nav{list-style:none;margin:0;padding:0}
+.sidenav .nav li{padding:13px 36px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:15px;color:var(--muted);display:flex;align-items:center;gap:14px;border-left:3px solid transparent;transition:.2s}
+.sidenav .nav li.active{color:var(--ink);background:var(--surface-2);border-left-color:var(--teal);font-weight:600}
+.sidenav .nav li.done{color:var(--teal)}
+.sidenav .nav li .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:22px;opacity:.8}
+
+/* 主内容区 · flex 三段式:标题顶 + 主体撑满 + 底部固定 */
+.main{position:absolute;left:268px;top:54px;right:0;bottom:0;padding:56px 72px 64px;overflow:hidden;display:flex;flex-direction:column}
+.main > .head{flex:0 0 auto}
+.main > .body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:24px 0}
+.main > .body.top{justify-content:flex-start}
+.main > .foot{flex:0 0 auto}
+/* 平铺页(无三段式):整体内容垂直居中 */
+.main.center{justify-content:center;gap:0}
+
+/* 章节标签 */
+.tag{display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;color:var(--teal);background:var(--teal-soft);padding:8px 16px;border-radius:4px;margin-bottom:30px}
+.tag .sq{width:7px;height:7px;background:var(--teal);border-radius:1px}
+.tag.amber{color:var(--amber);background:var(--amber-soft)}
+.tag.amber .sq{background:var(--amber)}
+
+/* 大标题 */
+.h1{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:700;font-size:62px;line-height:1.05;color:var(--ink);letter-spacing:-.02em;margin:0}
+.h1 .ac{color:var(--teal)}
+.h1 .amb{color:var(--amber)}
+.h2{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:44px;line-height:1.1;color:var(--ink);margin:0}
+.lead{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:22px;line-height:1.6;color:var(--ink-2);max-width:920px}
+
+/* 卡片 */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:30px}
+.card .ct{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--muted);margin-bottom:14px}
+.card .ch{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:24px;color:var(--ink);margin-bottom:10px}
+.card .cb{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:16px;line-height:1.6;color:var(--ink-2)}
+
+/* 终端窗口 */
+.terminal{background:var(--code);border-radius:8px;padding:28px 32px;font-family:'JetBrains Mono',monospace;box-shadow:0 20px 50px rgba(13,27,42,.18)}
+.terminal .th{display:flex;gap:8px;margin-bottom:20px;align-items:center}
+.terminal .th i{width:12px;height:12px;border-radius:50%;display:block}
+.terminal .th i:nth-child(1){background:#ff5f57}
+.terminal .th i:nth-child(2){background:#febc2e}
+.terminal .th i:nth-child(3){background:#28c840}
+.terminal .th .ti{margin-left:auto;font-size:12px;color:#6b7888;letter-spacing:.08em}
+.terminal pre{margin:0;font-size:17px;line-height:1.85;color:#cdd6e0;white-space:pre-wrap;word-break:break-word}
+.terminal pre .c{color:var(--teal-bright)}
+.terminal pre .a{color:var(--amber)}
+.terminal pre .m{color:#7a8898}
+.terminal pre .k{color:#d65d7a}
+.terminal pre .y{color:#f0d264}
+
+/* 数据指标卡 */
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:26px 30px}
+.metric .n{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:var(--ink);line-height:1}
+.metric .n .u{font-size:22px;color:var(--teal);font-weight:500}
+.metric .n.amb{color:var(--amber)}
+.metric .l{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;color:var(--muted);margin-top:10px}
+.metric .d{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:14px;color:var(--ink-2);margin-top:6px}
+
+/* 页码 */
+.page-num{position:absolute;bottom:26px;right:80px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.15em;color:var(--muted);z-index:6}
+
+/* reveal 动画 */
+.slide.active .reveal{animation:reveal .6s ease both}
+.slide.active .reveal:nth-child(1){animation-delay:.05s}
+.slide.active .reveal:nth-child(2){animation-delay:.15s}
+.slide.active .reveal:nth-child(3){animation-delay:.25s}
+.slide.active .reveal:nth-child(4){animation-delay:.35s}
+.slide.active .reveal:nth-child(5){animation-delay:.45s}
+.slide.active .reveal:nth-child(6){animation-delay:.55s}
+@keyframes reveal{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(20,184,166,.7)}70%{box-shadow:0 0 0 10px rgba(20,184,166,0)}100%{box-shadow:0 0 0 0 rgba(20,184,166,0)}}
+
+/* 控制条 */
+.deck-controls{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:1000;display:flex;gap:8px;align-items:center;background:rgba(13,27,42,.9);padding:8px 14px;border-radius:24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#cdd6e0;backdrop-filter:blur(8px)}
+.deck-controls button{background:none;border:1px solid rgba(255,255,255,.15);color:#cdd6e0;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.deck-controls button:hover{background:rgba(255,255,255,.1)}
+.deck-controls .pn{min-width:54px;text-align:center;letter-spacing:.05em}
+
+/* ============================================================
+   === 各页专属样式 ===
+   ============================================================ */
+
+/* — P1 封面 — */
+.cover{padding:0}
+.cover .main{padding:0}
+.cover-grid{position:absolute;inset:54px 0 0 268px;padding:80px 90px;display:flex;flex-direction:column;justify-content:center}
+.cover h1{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:700;font-size:108px;line-height:1.02;color:var(--ink);letter-spacing:-.025em;margin:0}
+.cover h1 .ac{color:var(--teal)}
+.cover h1 .mono{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:78px;color:var(--amber);display:block;margin-top:12px}
+.cover .sub{font-family:'Manrope','Noto Sans SC',sans-serif;font-weight:400;font-size:26px;line-height:1.55;color:var(--ink-2);max-width:880px;margin-top:38px}
+.cover .terminal{margin-top:48px;max-width:900px}
+.cover-metrics{position:absolute;right:90px;top:380px;display:flex;flex-direction:column;gap:16px}
+.cover-metrics .metric{min-width:200px}
+
+/* — 痛点页九球 — */
+.chaos-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:34px}
+.chaos-item{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px 22px;position:relative;overflow:hidden}
+.chaos-item::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--amber)}
+.chaos-item .ico{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);margin-bottom:12px;letter-spacing:.1em}
+.chaos-item .nm{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:21px;color:var(--ink);margin-bottom:8px}
+.chaos-item .ds{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:13px;line-height:1.5;color:var(--muted)}
+
+/* — 对比页 — */
+.vs{display:grid;grid-template-columns:1fr 80px 1fr;gap:0;margin-top:34px;align-items:stretch}
+.vs .col{padding:34px;border-radius:10px}
+.vs .bad{background:#fdf2f4;border:1px solid #f0cdd4}
+.vs .bad .vh{color:var(--rose);font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;margin-bottom:18px}
+.vs .bad .vt{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:26px;color:var(--ink);margin-bottom:16px}
+.vs .bad ul{margin:0;padding-left:20px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:16px;line-height:1.8;color:var(--ink-2)}
+.vs .arrow{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:40px;color:var(--teal)}
+.vs .good{background:var(--teal-soft);border:1px solid #b8ded9}
+.vs .good .vh{color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;margin-bottom:18px}
+.vs .good .vt{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:26px;color:var(--ink);margin-bottom:16px}
+.vs .good ul{margin:0;padding-left:20px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:16px;line-height:1.8;color:var(--ink-2)}
+
+/* — 金句页 — */
+.mantra{display:flex;flex-direction:column;justify-content:center;height:100%}
+.mantra .kicker{font-family:'JetBrains Mono',monospace;font-size:16px;letter-spacing:.2em;color:var(--teal);margin-bottom:40px;display:flex;align-items:center;gap:18px}
+.mantra .kicker span{width:60px;height:2px;background:var(--teal)}
+.mantra .big{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:700;font-size:180px;line-height:.98;color:var(--ink);letter-spacing:-.03em;margin:0}
+.mantra .big .a{color:var(--teal)}
+.mantra .big .b{color:var(--amber)}
+.mantra .desc{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:24px;color:var(--ink-2);margin-top:44px;max-width:900px;line-height:1.6}
+
+/* — 三步流程 — */
+.flow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:36px}
+.flow3 .step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:34px 32px;position:relative}
+.flow3 .step .num{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.15em;color:var(--muted);margin-bottom:18px}
+.flow3 .step .ttl{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:700;font-size:36px;color:var(--ink);margin-bottom:6px}
+.flow3 .step .ttl .ac{color:var(--teal)}
+.flow3 .step .one{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:17px;color:var(--ink-2);margin-bottom:20px;line-height:1.5}
+.flow3 .step ul{margin:0;padding-left:18px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:15px;line-height:1.85;color:var(--ink-2)}
+.flow3 .step.s1{border-top:4px solid var(--teal)}
+.flow3 .step.s2{border-top:4px solid var(--amber)}
+.flow3 .step.s3{border-top:4px solid var(--rose)}
+
+/* — 闭环图 — */
+.loop-wrap{display:flex;align-items:center;justify-content:center;gap:0;margin-top:40px}
+.loop-node{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px 24px;text-align:center;position:relative}
+.loop-node .ico{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600}
+.loop-node.n1 .ico{background:var(--teal-soft);color:var(--teal)}
+.loop-node.n2 .ico{background:var(--amber-soft);color:var(--amber)}
+.loop-node.n3 .ico{background:rgba(214,93,122,.12);color:var(--rose)}
+.loop-node.n4 .ico{background:rgba(109,140,184,.14);color:#5a7ba8}
+.loop-node .tt{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:20px;color:var(--ink);margin-bottom:8px}
+.loop-node .dc{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:13px;line-height:1.5;color:var(--muted);min-height:38px}
+.loop-node .cnt{position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.loop-arrow{font-family:'JetBrains Mono',monospace;font-size:32px;color:var(--muted);padding:0 14px}
+.loop-return{margin-top:28px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--teal);letter-spacing:.1em}
+
+/* — 优先级表 — */
+.prio-table{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.prio-table .row{display:grid;grid-template-columns:90px 220px 1fr;padding:18px 28px;border-bottom:1px solid var(--line-2);align-items:center}
+.prio-table .row:last-child{border-bottom:none}
+.prio-table .row.hd{background:var(--surface-2);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:600}
+.prio-table .lv{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px}
+.prio-table .lv.p0{color:var(--rose)}
+.prio-table .lv.p1{color:var(--amber)}
+.prio-table .lv.p2{color:var(--teal)}
+.prio-table .lv.p3{color:#5a7ba8}
+.prio-table .lv.p4{color:#7a6aad}
+.prio-table .lv.p5{color:var(--muted)}
+.prio-table .tt{font-family:'Manrope','Noto Sans SC',sans-serif;font-weight:600;font-size:16px;color:var(--ink)}
+.prio-table .ds{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:14px;color:var(--ink-2);line-height:1.5}
+
+/* — 状态机 — */
+.state-flow{display:flex;gap:0;margin-top:30px;flex-wrap:wrap}
+.state-chip{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 22px;text-align:center;position:relative}
+.state-chip .sn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:6px}
+.state-chip .st{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:16px;color:var(--ink)}
+.state-chip.sk{border-color:var(--teal);background:var(--teal-soft)}
+.state-chip.sk .st{color:var(--teal)}
+.state-arr{font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--muted);align-self:center;padding:0 10px}
+
+/* — 代码块(prompt 展示) — */
+.prompt-box{background:var(--code);border-radius:8px;margin-top:24px;overflow:hidden}
+.prompt-box .ph{background:var(--code-2);padding:14px 24px;display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#9fb0c0}
+.prompt-box .ph .file{color:var(--teal-bright)}
+.prompt-box .ph .ln{margin-left:auto;opacity:.6}
+.prompt-box pre{margin:0;padding:24px 28px;font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.85;color:#cdd6e0;white-space:pre-wrap;word-break:break-word;max-height:none}
+.prompt-box pre .kw{color:#d65d7a}
+.prompt-box pre .fn{color:var(--teal-bright)}
+.prompt-box pre .cm{color:#5a6a7a;font-style:italic}
+.prompt-box pre .nm{color:var(--amber)}
+.prompt-box pre .st{color:#9ece6a}
+
+/* — 截图占位 — */
+.screenshot{background:var(--surface-2);border:2px dashed var(--line);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--muted);position:relative;overflow:hidden}
+.screenshot::before{content:"🖼";font-size:54px;margin-bottom:14px;opacity:.4}
+.screenshot .cap{font-size:14px;letter-spacing:.08em}
+.screenshot .fnm{font-size:12px;color:var(--teal);margin-top:6px}
+.screenshot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
+
+/* — 满版大图页 · 截图占满主体区 — */
+.fullshot{flex:1;display:flex;flex-direction:column;min-height:0}
+.fullshot .flabel{flex:0 0 auto;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.12em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.fullshot .flabel .dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.fullshot .flabel .note{margin-left:auto;color:var(--ink-2);font-size:13px}
+.fullshot .fframe{flex:1;min-height:0;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(13,27,42,.1)}
+.fullshot .fframe img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.fullshot .fcap{flex:0 0 auto;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:15px;color:var(--ink-2);margin-top:14px;line-height:1.5}
+
+/* — 成效对比 — */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:30px}
+.result-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px 30px;position:relative}
+.result-card .ct{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--muted);margin-bottom:16px}
+.result-card .cmp{display:flex;align-items:baseline;gap:18px;margin-bottom:10px}
+.result-card .cmp .b{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:30px;color:var(--muted);text-decoration:line-through;opacity:.7}
+.result-card .cmp .ar{font-family:'JetBrains Mono',monospace;color:var(--teal);font-size:20px}
+.result-card .cmp .a{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:42px;color:var(--ink)}
+.result-card .cmp .a.hi{color:var(--teal)}
+.result-card .ds{font-family:'Manrope','Noto Sans SC',sans-serif;font-size:14px;color:var(--ink-2);line-height:1.5}
+.result-card .bx{position:absolute;top:24px;right:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);background:var(--teal-soft);padding:4px 10px;border-radius:4px}
+
+/* — 结尾页 — */
+.finale{display:flex;flex-direction:column;justify-content:center;height:100%}
+.finale .kicker{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.2em;color:var(--teal);margin-bottom:34px}
+.finale .big{font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:700;font-size:84px;line-height:1.1;color:var(--ink);letter-spacing:-.02em;margin:0;max-width:1500px}
+.finale .big .ac{color:var(--teal)}
+.finale .big .amb{color:var(--amber)}
+.finale .sign{margin-top:60px;display:flex;gap:50px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted)}
+.finale .sign b{color:var(--ink);font-weight:500}
+
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<div class="deck-stage">
+
+<!-- ============================================================
+     P1 · 封面
+     ============================================================ -->
+<section class="slide cover grid-bg" data-nav="01">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span>OPC CEO 作战系统</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span class="cur">封面</span></span>
+    <span class="right">OPC 高手创造赛 · 2026</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="active"><span class="n">01</span>封面</li>
+      <li><span class="n">02</span>场景痛点</li>
+      <li><span class="n">03</span>方法论</li>
+      <li><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="cover-grid">
+    <div class="tag reveal"><span class="sq"></span>面向一人公司的 AI 经营秘书系统</div>
+    <h1 class="reveal">把高并发的大脑<br>整理成 <span class="ac">主战役</span><span class="mono">OPC 冷启动组合技能包</span></h1>
+    <p class="sub reveal">不是另一个 todolist。而是按照「梳理—合并—突破」的节奏，把混乱、机会、责任、现金流，整理成可推进的经营操作系统。</p>
+    <div class="terminal reveal">
+      <div class="th"><i></i><i></i><i></i><span class="ti">opc-ceo-rhythm-workflow · RUN</span></div>
+<pre><span class="m">$</span> 启动 OPC CEO 节奏
+<span class="c">▸ 梳理</span>  现金流 / 客户 / 产品 / 噪音     <span class="m">→ 分类清空</span>
+<span class="a">▸ 合并</span>  本周主战役 1-2 · 必须推进 3-5   <span class="m">→ 找杠杆</span>
+<span class="k">▸ 突破</span>  48 小时只打穿一层 · 第一动作      <span class="m">→ 今天 15 分钟开始</span></pre>
+    </div>
+  </div>
+  <div class="cover-metrics">
+    <div class="metric reveal"><div class="n">31<span class="u"> skills</span></div><div class="l">组合技能</div></div>
+    <div class="metric reveal"><div class="n">4</div><div class="l">闭环技能组</div></div>
+    <div class="metric reveal"><div class="n">6<span class="u"> 周</span></div><div class="l">从 0 到闭环</div></div>
+  </div>
+  <div class="page-num">01 / 25</div>
+</section>
+
+<!-- ============================================================
+     P2 · 痛点:高并发的大脑
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="02">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>封面</span><b>/</b><span class="cur">02 场景痛点</span></span>
+    <span class="right">一、为什么 · WHY</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="active"><span class="n">02</span>场景痛点</li>
+      <li><span class="n">03</span>方法论</li>
+      <li><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag amber reveal"><span class="sq"></span>痛点 · 真实工作场景</div>
+    <h2 class="h1 reveal">一个人的大脑里，<br>同时跑着 <span class="amb">9 件事</span>。</h2>
+    <p class="lead reveal" style="margin-top:20px">一人公司 / 小公司 CEO 不是线性任务型员工，而是高并发判断型大脑。战略、产品、客户、内容、财务、团队、家庭、资产、健康，同时挤压。</p>
+    <div class="chaos-grid">
+      <div class="chaos-item reveal"><div class="ico">// 01 战略</div><div class="nm">主战役不清</div><div class="ds">机会太多，不知道该抓哪个</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 02 现金流</div><div class="nm">生存线焦虑</div><div class="ds">回款、社保、固定成本同时悬着</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 03 客户</div><div class="nm">线索流失</div><div class="ds">没存联系方式，没持续跟进</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 04 项目</div><div class="nm">交付卡点</div><div class="ds">不知道真正卡在哪里</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 05 内容</div><div class="nm">产出太慢</div><div class="ds">想表达，但写不动、发不出</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 06 财务</div><div class="nm">账目混乱</div><div class="ds">税、合同、报销没有闭环</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 07 团队</div><div class="nm">协作悬挂</div><div class="ds">待沟通事项反复出现</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 08 资产</div><div class="nm">沉淀断层</div><div class="ds">案例、经验散落在聊天里</div></div>
+      <div class="chaos-item reveal"><div class="ico">// 09 健康</div><div class="nm">精力透支</div><div class="ds">大脑长期高负载运转</div></div>
+      <div class="chaos-item reveal" style="background:var(--teal-soft);border-color:#b8ded9"><div class="ico" style="color:var(--teal)">// 核心矛盾</div><div class="nm" style="color:var(--teal)">脑内混乱</div><div class="ds">无法转译成可推进的经营动作</div></div>
+    </div>
+  </div>
+  <div class="page-num">02 / 25</div>
+</section>
+
+<!-- ============================================================
+     P3 · 传统方案为什么失败
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="02">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>封面</span><b>/</b><span class="cur">02 场景痛点</span></span>
+    <span class="right">一、为什么 · WHY</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="active"><span class="n">02</span>场景痛点</li>
+      <li><span class="n">03</span>方法论</li>
+      <li><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag amber reveal"><span class="sq"></span>传统方案的局限</div>
+    <h2 class="h1 reveal">待办清单，<br>本质是在<span class="amb">增加负担</span>。</h2>
+    <div class="vs">
+      <div class="col bad reveal">
+        <div class="vh">✕  传统待办系统</div>
+        <div class="vt">把混乱拆得更细</div>
+        <ul>
+          <li>每个事项被拆成更多 sub-task，越拆越碎</li>
+          <li>只按紧急排序，忽略现金流和客户热度</li>
+          <li>没有暂停池，所有事都"悬着"</li>
+          <li>没有杠杆动作，逐条完成的疲惫感</li>
+          <li>记录工具 ≠ 经营判断</li>
+        </ul>
+      </div>
+      <div class="arrow reveal">→</div>
+      <div class="col good reveal">
+        <div class="vh">✓  OPC 经营节奏</div>
+        <div class="vt">把混乱合并成主战役</div>
+        <ul>
+          <li>先清空，再把事项合并成少数主战役</li>
+          <li>现金流优先，再排客户、产品、内容</li>
+          <li>必须有暂停池，主动做减法</li>
+          <li>锁定 48 小时只打穿一个突破点</li>
+          <li>把脑内语言转译成经营判断</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:30px;font-size:18px;color:var(--muted)">真正有价值的秘书能力，是把混乱转译成经营判断，把分散事项合并成杠杆动作，再推动一个关键问题在 48 小时内打穿一层。</p>
+  </div>
+  <div class="page-num">03 / 25</div>
+</section>
+
+<!-- ============================================================
+     P4 · 核心金句页
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="03">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>痛点</span><b>/</b><span class="cur">03 方法论</span></span>
+    <span class="right">二、方法论 · METHOD</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="active"><span class="n">03</span>方法论</li>
+      <li><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main mantra">
+    <div class="kicker reveal"><span></span>核心工作法 · 全场唯一记忆锚点</div>
+    <h1 class="big reveal">梳理<span class="a">·</span>合并<span class="b">·</span>突破</h1>
+    <p class="desc reveal">先把脑内混乱清空，再把散乱事项合并成少数主战役，最后锁定 48 小时内必须推进的突破点。这不是任务管理器，是经营节奏系统。</p>
+  </div>
+  <div class="page-num">04 / 25</div>
+</section>
+
+<!-- ============================================================
+     P5 · 产品定位与双层结构
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="03">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>痛点</span><b>/</b><span class="cur">03 方法论</span></span>
+    <span class="right">二、方法论 · METHOD</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="active"><span class="n">03</span>方法论</li>
+      <li><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>产品定位</div>
+    <h2 class="h1 reveal">不是 todolist，<br>是经营节奏系统 · <span class="ac">双层结构</span></h2>
+    <p class="lead reveal" style="margin-top:20px;font-size:20px">帮助主理人把高并发的大脑、分散的机会、悬挂的责任和有限的现金流，整理成可推进的经营节奏。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px">
+      <div class="card reveal" style="border-top:4px solid var(--ink)">
+        <div class="ct">LAYER 01 · 方法论总控层</div>
+        <div class="ch">opc-ceo-rhythm-workflow</div>
+        <div class="cb">保证所有秘书动作都服从「梳理—合并—突破」。是协议层，不直接写表、不直接报价，只负责方法论对齐和判断。</div>
+        <div style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);background:var(--teal-soft);padding:10px 14px;border-radius:6px">输出：本周主战役 · 必须推进 · 暂停池 · 48h 突破点</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--teal)">
+        <div class="ct">LAYER 02 · 场景执行层</div>
+        <div class="ch">四大技能组承接具体场景</div>
+        <div class="cb">由每日启动、飞书收口、现金流判断、产品取舍、获客、交付、内容生产等技能承接。每个技能都遵循同一套方法论。</div>
+        <div style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);background:var(--teal-soft);padding:10px 14px;border-radius:6px">承接：每日启动 · 现金流 · 获客 · 交付 · 自媒体 · 收口</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">05 / 25</div>
+</section>
+
+<!-- ============================================================
+     P6 · 四大技能组闭环
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="04">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>方法论</span><b>/</b><span class="cur">04 架构闭环</span></span>
+    <span class="right">三、架构 · ARCHITECTURE</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="active"><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>四大技能组闭环</div>
+    <h2 class="h1 reveal">31 个技能，组成 <span class="ac">一个会自己转的闭环</span>。</h2>
+    <div class="loop-wrap">
+      <div class="loop-node n1 reveal">
+        <div class="cnt">10</div>
+        <div class="ico">秘</div>
+        <div class="tt">秘书技能组</div>
+        <div class="dc">总控方法论 · 日常启动 · 现金流 · 收口复盘</div>
+      </div>
+      <div class="loop-arrow reveal">→</div>
+      <div class="loop-node n2 reveal">
+        <div class="cnt">15</div>
+        <div class="ico">媒</div>
+        <div class="tt">自媒体技能组</div>
+        <div class="dc">经营突破点 → 内容资产 · 选题到发布</div>
+      </div>
+      <div class="loop-arrow reveal">→</div>
+      <div class="loop-node n3 reveal">
+        <div class="cnt">2</div>
+        <div class="ico">客</div>
+        <div class="tt">获客技能组</div>
+        <div class="dc">线索清空 · 谁最接近钱 · 下一句话</div>
+      </div>
+      <div class="loop-arrow reveal">→</div>
+      <div class="loop-node n4 reveal">
+        <div class="cnt">2</div>
+        <div class="ico">交</div>
+        <div class="tt">交付技能组</div>
+        <div class="dc">会议事实 · 项目节奏 · 客户结果闭环</div>
+      </div>
+    </div>
+    <div class="loop-return reveal">⟲ 获客与交付的客户问题、案例素材、异议 → 回流秘书技能组，反哺下一轮经营判断</div>
+    <div style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="metric reveal"><div class="n">31</div><div class="l">组合技能总数</div></div>
+      <div class="metric reveal"><div class="n">8</div><div class="l">飞书作战表</div></div>
+    </div>
+  </div>
+  <div class="page-num">06 / 25</div>
+</section>
+
+<!-- ============================================================
+     P7 · 调度协议 P0-P5 + 确认门禁
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="04">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>方法论</span><b>/</b><span class="cur">04 架构闭环</span></span>
+    <span class="right">三、架构 · ARCHITECTURE</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="active"><span class="n">04</span>架构闭环</li>
+      <li><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>调度协议 v1 · opc-skill-dispatcher</div>
+    <h2 class="h1" style="font-size:50px">多技能命中时，<span class="ac">按优先级裁决</span>。</h2>
+    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:28px;margin-top:26px">
+      <div class="prio-table reveal" style="margin-top:0">
+        <div class="row hd"><div>优先级</div><div>原则</div><div>说明</div></div>
+        <div class="row"><div class="lv p0">P0</div><div class="tt">确认门禁</div><div class="ds">写表/改状态/发布/报价，必须先拟方案后确认</div></div>
+        <div class="row"><div class="lv p1">P1</div><div class="tt">现金流优先</div><div class="ds">涉及钱/回款/成交，优先于一切</div></div>
+        <div class="row"><div class="lv p2">P2</div><div class="tt">主战役优先</div><div class="ds">难以判断时回到 CEO 节奏找杠杆</div></div>
+        <div class="row"><div class="lv p3">P3</div><div class="tt">客户优先于内容</div><div class="ds">既可做内容又能推进客户，先客户</div></div>
+        <div class="row"><div class="lv p4">P4</div><div class="tt">交付优先于新机会</div><div class="ds">已有交付风险，不开新机会</div></div>
+        <div class="row"><div class="lv p5">P5</div><div class="tt">资产沉淀优先</div><div class="ds">凡产出过判断，都判断是否沉淀</div></div>
+      </div>
+      <div class="terminal reveal">
+        <div class="th"><i></i><i></i><i></i><span class="ti">飞书三段式确认协议</span></div>
+<pre><span class="c">// 任何写表动作</span>
+<span class="m">不能直接执行</span>
+
+<span class="a">1. 先输出</span> 拟更新方案
+   表 / 字段 / 值 / 风险
+
+<span class="a">2. 等用户</span> 明确确认
+   <span class="k">✕</span> "你看着办"
+   <span class="k">✕</span> "差不多"
+   <span class="k">✕</span> "先这样"
+   <span class="c">✓ "确认" "执行"</span>
+
+<span class="a">3. 确认后</span> 再落表
+   汇报实际结果</pre>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">07 / 25</div>
+</section>
+
+<!-- ============================================================
+     P8 · 梳理:认知清仓
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">四、深入秘书组 · 核心方法</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>第一步 · 梳理 / 先清空，不排计划</div>
+    <h2 class="h1 reveal">认知清仓：把脑内语言，<br>转译成<span class="ac">可处理对象</span>。</h2>
+    <div class="flow3">
+      <div class="step s1 reveal">
+        <div class="num">// STEP 01 · 梳理</div>
+        <div class="ttl"><span class="ac">现金流</span>/生存线</div>
+        <div class="one">影响本月收入、回款、固定成本、社保公积金的事项</div>
+        <ul>
+          <li>本月缺口与下月风险</li>
+          <li>待回款优先级</li>
+          <li>最接近钱的动作</li>
+        </ul>
+      </div>
+      <div class="step s1 reveal">
+        <div class="num">// STEP 01 · 梳理</div>
+        <div class="ttl"><span class="ac">客户</span>/成交/交付</div>
+        <div class="one">已有客户、热线索、待报价、待交付、待验收、待回款</div>
+        <ul>
+          <li>谁最接近钱</li>
+          <li>谁最接近客户信任</li>
+          <li>下一句话说什么</li>
+        </ul>
+      </div>
+      <div class="step s1 reveal">
+        <div class="num">// STEP 01 · 梳理</div>
+        <div class="ttl"><span class="ac">产品</span>/内容/资产</div>
+        <div class="one">可变成产品、案例、文章、demo、渠道素材的事项</div>
+        <ul>
+          <li>能否产品化</li>
+          <li>能否内容化</li>
+          <li>能否案例化</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card reveal" style="margin-top:24px;border-left:4px solid var(--muted);background:var(--surface-2)">
+      <div class="ct">// STEP 01 · 梳理 · 噪音池</div>
+      <div class="cb" style="font-size:17px">第四类：<b>噪音 / 欲望 / 长期想法</b> —— 想做但当前不贴近现金流或主战役的事项。梳理阶段只回答四件事：有哪些真实事项、哪些最接近钱、哪些最接近客户信任、哪些只是噪音。</div>
+    </div>
+  </div>
+  <div class="page-num">08 / 25</div>
+</section>
+
+<!-- ============================================================
+     P9 · 合并:找杠杆动作
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">四、深入秘书组 · 核心方法</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag amber reveal"><span class="sq"></span>第二步 · 合并 / 不是逐条完成，是找杠杆</div>
+    <h2 class="h1 reveal">5 个孤立任务，<br>合并成 <span class="amb">1 个主战役</span>。</h2>
+    <div style="display:grid;grid-template-columns:1fr 100px 1fr;gap:0;margin-top:34px;align-items:stretch">
+      <div class="card reveal" style="background:#fdf2f4;border-color:#f0cdd4">
+        <div class="ct" style="color:var(--rose)">✕ 传统待办：拆得更细</div>
+        <div style="margin-top:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink-2);padding:10px 0;border-bottom:1px dashed #f0cdd4">☐ 续费率分析</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink-2);padding:10px 0;border-bottom:1px dashed #f0cdd4">☐ 航海体验优化</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink-2);padding:10px 0;border-bottom:1px dashed #f0cdd4">☐ 新人融入流程</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink-2);padding:10px 0;border-bottom:1px dashed #f0cdd4">☐ 用户获得感提升</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--ink-2);padding:10px 0">☐ 社区案例呈现</div>
+        </div>
+        <div style="margin-top:16px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:14px;color:var(--rose)">5 个碎任务，逐条完成的疲惫</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:40px;color:var(--amber)" class="reveal">⟶</div>
+      <div class="card reveal" style="background:var(--amber-soft);border-color:#f0d9c0">
+        <div class="ct" style="color:var(--amber)">✓ OPC 合并：找杠杆动作</div>
+        <div class="ch" style="margin-top:14px;color:var(--amber)">本周主战役 · 1 个</div>
+        <div style="font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:26px;color:var(--ink);line-height:1.3;margin-top:8px">设计新用户首月拿到小结果的闭环机制</div>
+        <div style="margin-top:20px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:15px;color:var(--ink-2);line-height:1.7">续费、体验、融入、获得感、案例 —— 这 5 件事背后是同一个经营问题。<b>合并成一个主战役，所有动作都服务它。</b></div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber)">▸ 一次合并，等于推进 5 件事</div>
+      </div>
+    </div>
+    <p class="lead reveal" style="margin-top:24px;font-size:18px">合并的关键问题：<b style="color:var(--amber)">这些事项能不能合并成一个更大的经营动作？</b> 普通系统把任务越拆越细；OPC 秘书反过来，把分散事项压缩成主战役。</p>
+  </div>
+  <div class="page-num">09 / 25</div>
+</section>
+
+<!-- ============================================================
+     P10 · 突破:四类输出
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">四、深入秘书组 · 核心方法</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal" style="color:var(--rose);background:rgba(214,93,122,.1)"><span class="sq" style="background:var(--rose)"></span>第三步 · 突破 / 执行日是推进主战役，不是清 todo</div>
+    <h2 class="h1 reveal">每次梳理，必须输出<span class="ac">四类结果</span>。</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px">
+      <div class="card reveal" style="border-top:4px solid var(--teal)">
+        <div class="ct">输出 01</div>
+        <div class="ch" style="color:var(--teal);font-size:22px">本周主战役</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:40px;color:var(--ink);margin:8px 0">1-2 <span style="font-size:18px;color:var(--muted);font-weight:400">个</span></div>
+        <div class="cb">本周真正要打穿的经营问题</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--amber)">
+        <div class="ct">输出 02</div>
+        <div class="ch" style="color:var(--amber);font-size:22px">必须推进事项</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:40px;color:var(--ink);margin:8px 0">3-5 <span style="font-size:18px;color:var(--muted);font-weight:400">个</span></div>
+        <div class="cb">围绕主战役或生存线必须发生的动作</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--muted)">
+        <div class="ct">输出 03</div>
+        <div class="ch" style="color:var(--muted);font-size:22px">暂停 / 不做池</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:40px;color:var(--ink);margin:8px 0">不限 <span style="font-size:18px;color:var(--muted);font-weight:400">量</span></div>
+        <div class="cb">有价值但本周不碰，或主动砍掉</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--rose);background:rgba(214,93,122,.05)">
+        <div class="ct">输出 04 · 核心</div>
+        <div class="ch" style="color:var(--rose);font-size:22px">48 小时突破点</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:40px;color:var(--rose);margin:8px 0">1 <span style="font-size:18px;color:var(--muted);font-weight:400">个</span></div>
+        <div class="cb">两天内必须推进到下一阶段的关键动作</div>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:22px;display:flex;align-items:center;gap:18px;background:rgba(214,93,122,.06);border-left:4px solid var(--rose);border-radius:8px;padding:18px 24px">
+      <div style="font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:20px;color:var(--rose);white-space:nowrap">核心判断句</div>
+      <div style="font-family:'Manrope','Noto Sans SC',sans-serif;font-size:17px;color:var(--ink-2)">"这周真正要打穿的，是什么？" · 每次梳理必须选出一个 48 小时突破点，否则会变成高级内耗。</div>
+    </div>
+  </div>
+  <div class="page-num">10 / 25</div>
+</section>
+
+<!-- ============================================================
+     P11 · 真实运行截图满版 · 用户提问 → AI 生成作战台
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">真实运行 · LIVE DEMO</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>真实运行 · 每天 8:30 · 5 分钟进入作战状态</div>
+      <h2 class="h1 reveal" style="font-size:44px">用户提问一句话 → <span class="ac">AI 生成完整作战台</span></h2>
+    </div>
+    <div class="body">
+      <div class="fullshot reveal" style="flex-direction:row;gap:20px">
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+          <div class="flabel"><span class="dot"></span>① 用户输入<span class="note">启动 OPC 每日工作流</span></div>
+          <div class="fframe"><img src="02-daily-output.png" alt="每日启动用户输入"></div>
+          <div class="fcap">把当天状况丢给小浣熊</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+          <div class="flabel"><span class="dot" style="background:var(--amber)"></span>② AI 生成<span class="note" style="color:var(--amber)">结构化今日作战台</span></div>
+          <div class="fframe" style="border-color:#b8ded9"><img src="02-daily-output-ai-response.png" alt="AI生成的真实今日作战台"></div>
+          <div class="fcap">今日主线 / 必须动作 / 暂停池 / 48h 突破点</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">11 / 25</div>
+</section>
+
+<!-- ============================================================
+     P12 · 核心 Prompt · 禁止事项与质量标准
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">核心评审项 · 可复用证明</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>核心 Prompt 原词 · opc-ceo-rhythm-workflow / SKILL.md</div>
+      <h2 class="h1 reveal" style="font-size:46px">写进 skill 的<span class="ac">禁止事项</span>，逼它做判断而非清单。</h2>
+    </div>
+    <div class="body top">
+      <div class="prompt-box reveal" style="margin-top:0">
+        <div class="ph"><span class="file">opc-ceo-rhythm-workflow</span><span class="ln">禁止事项 + 质量标准</span></div>
+<pre><span class="cm"># 禁止事项</span>
+
+<span class="kw">- 禁止</span>把用户输入改写成更长的 todolist
+<span class="kw">- 禁止</span>输出 10 条以上"今日任务"
+<span class="kw">- 禁止</span>把所有机会都纳入执行
+<span class="kw">- 禁止</span>只按紧急程度排序，忽略现金流和客户热度
+<span class="kw">- 禁止</span>给出没有暂停池的计划
+<span class="kw">- 禁止</span>把内容生产、系统整理、工具优化放到现金流动作前面
+
+<span class="cm"># 质量标准</span>
+- 主战役不超过 <span class="nm">2</span> 个
+- 必须推进事项不超过 <span class="nm">5</span> 个
+- 至少 <span class="nm">1</span> 个明确暂停项
+- 48 小时突破点足够具体
+- 第一动作可以在今天 15-30 分钟内开始
+- <span class="fn">不是任务清单，而是经营判断</span></pre>
+      </div>
+    </div>
+    <div class="foot reveal" style="display:flex;gap:16px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);margin-top:18px">
+      <span>📁 完整 skill 仓库已开源：</span>
+      <span style="color:var(--teal)">github.com/cnzhihao/opc-bootstrap-skill</span>
+      <span style="margin-left:auto;color:var(--amber)">▸ 真实可复用，非演示用一次性脚本</span>
+    </div>
+  </div>
+  <div class="page-num">12 / 25</div>
+</section>
+
+<!-- ============================================================
+     P13 · 核心 Prompt 截图满版 · skill 真实内容
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">核心评审项 · 可复用证明</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>SKILL.md 真实内容 · 梳理—合并—突破 工作流程</div>
+    </div>
+    <div class="body">
+      <div class="fullshot reveal">
+        <div class="flabel"><span class="dot"></span>opc-ceo-rhythm-workflow / SKILL.md<span class="note">总控方法论 skill · 真实文件内容</span></div>
+        <div class="fframe"><img src="01-prompt-ceo-rhythm.png" alt="opc-ceo-rhythm-workflow skill 真实内容"></div>
+        <div class="fcap">梳理四类表 + 合并优先级 + 突破四要素，全部写成可执行协议</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">13 / 25</div>
+</section>
+
+<!-- ============================================================
+     P12 · 状态机与收口
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">四、深入秘书组 · 核心方法</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>系统会自己转 · 脑内清空池状态机</div>
+      <h2 class="h1 reveal" style="font-size:46px">信息扔进去，<span class="ac">状态自己流转</span>。</h2>
+    </div>
+    <div class="body top">
+      <div class="state-flow reveal" style="margin-top:24px">
+        <div class="state-chip"><div class="sn">STATE 01</div><div class="st">新进入</div></div>
+        <div class="state-arr">→</div>
+        <div class="state-chip"><div class="sn">STATE 02</div><div class="st">待判断</div></div>
+        <div class="state-arr">→</div>
+        <div class="state-chip sk"><div class="sn">STATE 03</div><div class="st">已分流</div></div>
+        <div class="state-arr">→</div>
+        <div class="state-chip"><div class="sn">STATE 04</div><div class="st">暂停</div></div>
+        <div class="state-arr">→</div>
+        <div class="state-chip"><div class="sn">STATE 05</div><div class="st">已归档</div></div>
+        <div class="state-arr">→</div>
+        <div class="state-chip"><div class="sn">STATE 06</div><div class="st">废弃</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:24px;margin-top:28px">
+        <div class="card reveal" style="border-left:4px solid var(--teal)">
+          <div class="ct">已分流 → 跨表派生去向</div>
+          <div class="cb" style="font-size:15px;line-height:1.9">
+            清空池事项进入"已分流"后，自动派生到：<br>
+            <b style="color:var(--teal)">本周主战役</b> / 客户线索 / 内容选题池 / 服务产品货架 / 项目总表 / 回款记录 / 暂停池 / 复盘素材 / 废弃
+          </div>
+          <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber)">▸ 五步流转：拟清空 → 判断主战役 → 判断派生 → 拟更新方案 → 确认后落表</div>
+        </div>
+        <div class="card reveal" style="border-left:4px solid var(--rose);background:#fdf6f7">
+          <div class="ct" style="color:var(--rose)">真实运行证据</div>
+          <div class="ch">我只需要盯两件事</div>
+          <div class="cb" style="font-size:18px;line-height:1.7;margin-top:10px">
+            <b style="color:var(--ink)">① 当天要做什么</b><br>
+            <b style="color:var(--ink)">② 还没清空的脑内信息</b>
+          </div>
+          <div style="margin-top:14px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:14px;color:var(--rose)">剩下的状态、关联、闭环，系统自己更新。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">14 / 25</div>
+</section>
+
+<!-- ============================================================
+     P15 · 飞书脑内清空池 满版
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">飞书真实运行 · LIVE SYSTEM</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>飞书多维表格 · 真实运行</div>
+      <h2 class="h1 reveal" style="font-size:44px">脑内清空池 · <span class="ac">状态机正在运转</span></h2>
+    </div>
+    <div class="body">
+      <div class="fullshot reveal">
+        <div class="flabel"><span class="dot"></span>00｜OPC CEO 作战系统 / 脑内清空池<span class="note">新进入 · 待判断 · 已分流 · 暂停 · 已归档 · 废弃</span></div>
+        <div class="fframe"><img src="03.1-feishu-clearace.png" alt="飞书脑内清空池真实运行"></div>
+        <div class="fcap">每条脑内信息都有状态字段，扔进来后会自动判断、派生、闭环 —— 不是手动维护的死表</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">15 / 25</div>
+</section>
+
+<!-- ============================================================
+     P16 · 飞书本周主战役 满版
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="05">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>架构</span><b>/</b><span class="cur">05 秘书技能组</span></span>
+    <span class="right">飞书真实运行 · LIVE SYSTEM</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="active"><span class="n">05</span>秘书技能组</li>
+      <li><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>飞书多维表格 · 最硬的可复用证据</div>
+      <h2 class="h1 reveal" style="font-size:44px">本周主战役 · <span class="ac">9 条自我闭环</span></h2>
+    </div>
+    <div class="body">
+      <div class="fullshot reveal">
+        <div class="flabel"><span class="dot"></span>00｜OPC CEO 作战系统 / 本周主战役<span class="note">状态自动更新 · 无需手动维护</span></div>
+        <div class="fframe" style="border-color:#b8ded9"><img src="04-feishu-main-battles.png" alt="飞书本周主战役9条自闭环"></div>
+        <div class="fcap">主战役会自己闭环、状态自己更新 —— 我只需要盯"当天做什么"和"还没清空的脑内信息"</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">16 / 25</div>
+</section>
+
+<!-- ============================================================
+     P13 · 自媒体技能组
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="06">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>秘书组</span><b>/</b><span class="cur">06 获客·自媒体·交付</span></span>
+    <span class="right">五、其他三组 · 闭环</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="active"><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag amber reveal"><span class="sq"></span>自媒体技能组 · 15 个 skill</div>
+      <h2 class="h1 reveal" style="font-size:48px">经营突破点 → <span class="amb">内容资产</span>。</h2>
+    </div>
+    <div class="body" style="display:grid;grid-template-columns:1fr 1.25fr;gap:32px;align-items:center;justify-items:stretch">
+      <div class="reveal" style="display:flex;flex-direction:column;gap:20px">
+        <p class="lead" style="margin:0;font-size:19px">不是独立内容工厂，而是把经营判断持续转化成可发布、可复盘、可复用的内容资产。核心问题：<b>这篇内容服务哪个经营目标？</b></p>
+        <div style="display:grid;grid-template-columns:1fr;gap:14px">
+          <div class="metric"><div class="n amb">3-4<span class="u"> 篇/日</span></div><div class="l">内容产能(原 1-2 篇/周)</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="metric"><div class="n">15</div><div class="l">内容工厂技能</div></div>
+            <div class="metric"><div class="n">5<span class="u"> 层</span></div><div class="l">生产结构</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="terminal reveal" style="margin:0">
+      <div class="th"><i></i><i></i><i></i><span class="ti">opc-content-factory-workflow · 标准运行流程</span></div>
+<pre><span class="c">经营主战役</span>
+  ↓
+<span class="a">内容主战役判断</span>                    <span class="m">opc-content-factory-workflow</span>
+  ↓
+选题优先级判断                       <span class="m">topic-prioritization · topic-picker</span>
+  ↓
+访谈采集真实素材                     <span class="m">interview</span>
+  ↓
+初稿生成与多轮优化                   <span class="m">draft-optimizer · style-updater</span>
+  ↓
+渠道适配与多平台发布包               <span class="m">channel-fit · publisher · wechatsync · x-article</span>
+  ↓
+封面 / 卡片 / 社交传播图             <span class="m">cover-generator · social-card</span>
+  ↓
+<span class="k">数据复盘与资产沉淀 → 反哺下一轮选题</span>   <span class="m">weekly-report · weekly-review · asset-archive</span></pre>
+    </div>
+    </div>
+  </div>
+  <div class="page-num">17 / 25</div>
+</section>
+
+<!-- ============================================================
+     P14 · 获客技能组
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="06">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>秘书组</span><b>/</b><span class="cur">06 获客·自媒体·交付</span></span>
+    <span class="right">五、其他三组 · 闭环</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="active"><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>获客技能组 · 2 个核心 skill</div>
+    <h2 class="h1 reveal" style="font-size:48px"><span class="ac">谁最接近钱？</span> 下一句话怎么说？</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px">
+      <div class="card reveal" style="border-top:4px solid var(--teal)">
+        <div class="ct">opc-lead-inbox-clearance</div>
+        <div class="ch">获客线索清空</div>
+        <div class="cb">把口述、聊天记录、内容反馈、社群互动、老关系、转介绍，整理成<b>客户线索 / 观察线索 / 暂停线索</b>。</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);background:var(--teal-soft);padding:10px 14px;border-radius:6px">→ 线索分层 · 客户阶段 · 优先级 · 下一步</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--amber)">
+        <div class="ct">opc-sales-conversation-strategy</div>
+        <div class="ch">销售沟通策略</div>
+        <div class="cb">基于客户上下文判断<b>成交阻力、下一句话、下一步动作</b>，以及是否报价、暂停或发案例。</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--amber);background:var(--amber-soft);padding:10px 14px;border-radius:6px">→ 客户阶段 · 阻力 · 话术 · 报价前澄清</div>
+      </div>
+    </div>
+    <div class="card reveal" style="margin-top:22px;border-left:4px solid var(--rose);background:#fdf6f7">
+      <div class="ct" style="color:var(--rose)">与内容工厂的桥接 · 一线反馈回流</div>
+      <div class="cb" style="font-size:16px;line-height:1.7">获客过程暴露的<b>高频客户问题、典型异议、报价阻力、客户原话、丢单原因</b>，自动回流内容工厂选题池 —— 形成「内容获客 → 销售判断 → 飞书更新 → 内容资产」闭环。</div>
+    </div>
+    <div style="margin-top:20px;display:flex;gap:16px">
+      <div class="metric reveal" style="flex:1"><div class="n hi">3-4<span class="u"> 天</span></div><div class="l">跟进节奏</div><div class="d">原：不存联系方式不跟进</div></div>
+      <div class="metric reveal" style="flex:1"><div class="n hi">2-3<span class="u"> 次</span></div><div class="l">持续触达</div><div class="d">每个关键线索</div></div>
+      <div class="metric reveal" style="flex:1"><div class="n amb">2</div><div class="l">case 在跑</div><div class="d">潜在成交</div></div>
+    </div>
+  </div>
+  <div class="page-num">18 / 25</div>
+</section>
+
+<!-- ============================================================
+     P15 · 交付技能组
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="06">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>秘书组</span><b>/</b><span class="cur">06 获客·自媒体·交付</span></span>
+    <span class="right">五、其他三组 · 闭环</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="active"><span class="n">06</span>获客·自媒体·交付</li>
+      <li><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal" style="color:var(--rose);background:rgba(214,93,122,.1)"><span class="sq" style="background:var(--rose)"></span>交付技能组 · 2 个核心 skill</div>
+    <h2 class="h1 reveal" style="font-size:48px">客户结果闭环：<span class="amb">会议事实 → 项目节奏 → 收口</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px">
+      <div class="card reveal" style="border-top:4px solid var(--rose)">
+        <div class="ct">opc-meeting-summary-to-delivery</div>
+        <div class="ch">会议纪要转交付动作</div>
+        <div class="cb">把会议纪要、录音转写、沟通摘要转成<b>项目状态变化、客户反馈、责任人、下一步动作、交付物变化</b>。</div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--amber)">
+        <div class="ct">opc-project-rhythm-manager</div>
+        <div class="ch">项目节奏管理</div>
+        <div class="cb">判断<b>项目阶段、当前卡点、交付风险、下一次关键交付动作</b>。解决"会开完了没沉淀、项目卡住不知卡哪"。</div>
+      </div>
+    </div>
+    <div class="terminal reveal" style="margin-top:24px">
+      <div class="th"><i></i><i></i><i></i><span class="ti">会议纪要二次引用规则 · 固定流程</span></div>
+<pre><span class="m">$</span> 输入会议纪要 / 录音转写 / 客户沟通摘要
+
+<span class="c">▸ ① opc-meeting-summary-to-delivery</span>
+   抽取事实 · 客户反馈 · 行动项 · 交付物变化 · 潜在机会
+        ↓
+<span class="a">▸ ② opc-project-rhythm-manager</span>
+   判断阶段 · 卡点 · 风险 · 下一次关键交付动作
+        ↓
+<span class="k">▸ ③ opc-feishu-update-review</span>
+   拟更新方案 → 确认 → 项目总表 / 今日作战台 / 交付文档</pre>
+    </div>
+    <p class="lead reveal" style="margin-top:20px;font-size:17px;color:var(--muted)">关键：<b style="color:var(--ink)">区分"客户说了什么"和"项目应该怎么判断"</b>，避免把事实和判断混在一起。续费、转介绍、案例、内容素材机会自动识别。</p>
+  </div>
+  <div class="page-num">19 / 25</div>
+</section>
+
+<!-- ============================================================
+     P16 · 小浣熊整合 + 连接
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="07">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>获客·自媒体·交付</span><b>/</b><span class="cur">07 工具整合</span></span>
+    <span class="right">六、怎么做出来的 · INTEGRATION</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="active"><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>工具整合 · 办公小浣熊 × 飞书</div>
+      <h2 class="h1 reveal" style="font-size:46px">不是 AI 出主意 + 手动搬运，<br>是<span class="ac">官方连接 · 自动流转</span>。</h2>
+    </div>
+    <div class="body top">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px">
+        <div class="card reveal" style="border-top:4px solid var(--teal)">
+          <div class="ct">数据流 · 整合架构</div>
+          <div class="terminal" style="margin-top:8px;box-shadow:none">
+            <div class="th" style="margin-bottom:14px"><i></i><i></i><i></i><span class="ti">实时连接</span></div>
+<pre style="font-size:16px;line-height:2"><span class="c">办公小浣熊</span> <span class="m">(大脑/判断)</span>
+     <span class="a">↕</span>  <span class="m">官方连接</span>
+<span class="c">飞书</span> <span class="m">(记忆/系统)</span>
+     ↓
+<span class="k">多维表格</span>
+ 脑内清空池 → 主战役
+ → 客户 → 项目 → 现金流</pre>
+          </div>
+        </div>
+        <div class="card reveal" style="border-top:4px solid var(--amber)">
+          <div class="ct">小浣熊四模块协同</div>
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:var(--surface-2);border-radius:8px;padding:16px"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--ink)">数据分析</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:4px">现金流/回款计算</div></div>
+            <div style="background:var(--surface-2);border-radius:8px;padding:16px"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--ink)">文案</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:4px">内容/话术/周报</div></div>
+            <div style="background:var(--surface-2);border-radius:8px;padding:16px"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--ink)">PPT</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:4px">封面/社交卡片</div></div>
+            <div style="background:var(--surface-2);border-radius:8px;padding:16px"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--ink)">知识库</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-top:4px">飞书多维表格</div></div>
+          </div>
+          <div style="margin-top:14px;font-family:'Manrope','Noto Sans SC',sans-serif;font-size:15px;color:var(--ink-2);line-height:1.6">想做的事<b style="color:var(--teal)">随手扔进小浣熊</b>，它直接读写飞书多维表格 —— 信息进入脑内清空池，自动判断、派生、闭环。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">20 / 25</div>
+</section>
+
+<!-- ============================================================
+     P21 · 官方连接截图满版
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="07">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>获客·自媒体·交付</span><b>/</b><span class="cur">07 工具整合</span></span>
+    <span class="right">真实连接 · LIVE INTEGRATION</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="active"><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag reveal"><span class="sq"></span>办公小浣熊 ↔ 飞书 官方连接</div>
+      <h2 class="h1 reveal" style="font-size:44px">官方连接已启用 · <span class="ac">数据自动流转</span></h2>
+    </div>
+    <div class="body">
+      <div class="fullshot reveal">
+        <div class="flabel"><span class="dot"></span>办公小浣熊 · 飞书连接配置<span class="note">官方能力 · 非手动搬运</span></div>
+        <div class="fframe"><img src="00-raccoon-feishu-connection.png" alt="办公小浣熊与飞书官方连接"></div>
+        <div class="fcap">小浣熊通过官方连接直接读写飞书多维表格和云文档 —— 这是系统自动闭环的基础</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">21 / 25</div>
+</section>
+
+<!-- ============================================================
+     P22 · Skill Creator 创建与演进 · 满版
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="07">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>获客·自媒体·交付</span><b>/</b><span class="cur">07 工具整合</span></span>
+    <span class="right">如何创建 · SKILL CREATOR</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="active"><span class="n">07</span>工具整合</li>
+      <li><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main">
+    <div class="head">
+      <div class="tag amber reveal"><span class="sq"></span>Skill Creator · 创建 / 修改 / 删除</div>
+      <h2 class="h1 reveal" style="font-size:44px">没有"专门调优"，<span class="amb">调优就是工作本身</span>。</h2>
+    </div>
+    <div class="body top" style="gap:18px">
+      <div class="fullshot reveal" style="flex:0 1 auto;min-height:0">
+        <div class="flabel"><span class="dot" style="background:var(--amber)"></span>Skill Creator<span class="note">让小浣熊生成和管理 skill</span></div>
+        <div class="fframe"><img src="06-prompt-iteration.png" alt="Skill Creator 创建和管理 skill"></div>
+      </div>
+      <div class="reveal" style="flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:stretch">
+        <div style="background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:8px;padding:14px 18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);margin-bottom:4px">▸ 01 · 创建</div>
+          <div style="font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:16px;color:var(--ink)">讲清方法论 → 写进 SKILL.md</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:8px;padding:14px 18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber);margin-bottom:4px">▸ 02 · 真实运行</div>
+          <div style="font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:16px;color:var(--ink)">拿去跑真实经营</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:8px;padding:14px 18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--rose);margin-bottom:4px">▸ 03 · 当场改</div>
+          <div style="font-family:'Space Grotesk','Noto Sans SC',sans-serif;font-weight:600;font-size:16px;color:var(--ink)">发现问题 → 直接修改</div>
+        </div>
+        <div style="background:var(--teal-soft);border:1px solid #b8ded9;border-radius:8px;padding:14px 18px;display:flex;align-items:center">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal);letter-spacing:.08em;white-space:nowrap">↻ 持续演进</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">22 / 25</div>
+</section>
+
+<!-- ============================================================
+     P18 · 量化结果
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="08">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>工具整合</span><b>/</b><span class="cur">08 成效价值</span></span>
+    <span class="right">七、成效与价值 · RESULTS</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="done"><span class="n">07</span>工具整合</li>
+      <li class="active"><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>成效 · 6 周从 0 到闭环的真实数据</div>
+    <h2 class="h1 reveal" style="font-size:46px">5 月启动，<span class="ac">6 周跑出现金流与增长</span>。</h2>
+    <div class="result-grid">
+      <div class="result-card reveal">
+        <div class="bx">最硬证据</div>
+        <div class="ct">真实收款</div>
+        <div class="cmp"><span class="b">¥0</span><span class="ar">→</span><span class="a hi">¥3,000+</span></div>
+        <div class="ds">5 月冷启动至今真实到账，另有 2 个 case 正在跑</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="ct">全平台粉丝</div>
+        <div class="cmp"><span class="b">0</span><span class="ar">→</span><span class="a hi">5,000</span></div>
+        <div class="ds">冷启动期间通过内容工厂持续产出增长</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="ct">每日规划耗时</div>
+        <div class="cmp"><span class="b">无节奏</span><span class="ar">→</span><span class="a hi">5 <span style="font-size:24px">分钟</span></span></div>
+        <div class="ds">每天 8:30 跑流程，5 分钟说清今天做什么</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="ct">内容产能</div>
+        <div class="cmp"><span class="b">1-2 篇/周</span><span class="ar">→</span><span class="a hi">3-4 <span style="font-size:24px">篇/日</span></span></div>
+        <div class="ds">单日产出分一周发，约 10 倍提升</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="ct">客户跟进</div>
+        <div class="cmp"><span class="b">不存不追</span><span class="ar">→</span><span class="a hi">3-4 天 / 2-3 次</span></div>
+        <div class="ds">从线索流失到持续触达，关键线索每 3-4 天跟进 2-3 次</div>
+      </div>
+      <div class="result-card reveal">
+        <div class="ct">系统自闭环</div>
+        <div class="cmp"><span class="b">0</span><span class="ar">→</span><span class="a hi">9 <span style="font-size:24px">条主战役</span></span></div>
+        <div class="ds">主战役自我闭环、状态自更新，只需盯当天动作和未清空信息</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">23 / 25</div>
+</section>
+
+<!-- ============================================================
+     P19 · 商业价值与可复用性
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="08">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>工具整合</span><b>/</b><span class="cur">08 成效价值</span></span>
+    <span class="right">七、成效与价值 · VALUE</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="done"><span class="n">07</span>工具整合</li>
+      <li class="active"><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main" center>
+    <div class="tag reveal"><span class="sq"></span>商业价值与可持续性</div>
+    <h2 class="h1 reveal" style="font-size:46px">3000 元不是终点，<br>是<span class="ac">"系统可持续"的验证</span>。</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px">
+      <div class="card reveal" style="border-top:4px solid var(--teal)">
+        <div class="ct">可持续运行</div>
+        <div class="ch">不是一次性演示</div>
+        <div class="cb" style="font-size:16px;line-height:1.8">
+          <b style="color:var(--teal)">每日</b> 8:30 跑作战台 · 5 分钟进入状态<br>
+          <b style="color:var(--teal)">每周日</b> 收口 · 周报 · 教训复盘<br>
+          <b style="color:var(--teal)">随手</b> 把脑内信息扔进去 → 自动更新飞书<br>
+          主战役自我闭环 · 状态自更新
+        </div>
+      </div>
+      <div class="card reveal" style="border-top:4px solid var(--amber)">
+        <div class="ct">可复用</div>
+        <div class="ch">别的 OPC 也能跑</div>
+        <div class="cb" style="font-size:16px;line-height:1.8">
+          skill 仓库已<b style="color:var(--amber)">完全开源</b><br>
+          方法论「梳理—合并—突破」与具体业务解耦<br>
+          飞书结构、状态机、确认协议均可直接复用<br>
+          任何一人公司冷启动都能套用
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <div class="metric reveal"><div class="n">31</div><div class="l">开源技能</div></div>
+      <div class="metric reveal"><div class="n">8</div><div class="l">飞书作战表</div></div>
+      <div class="metric reveal"><div class="n">4</div><div class="l">闭环技能组</div></div>
+      <div class="metric reveal"><div class="n amb">∞</div><div class="l">可复用对象</div></div>
+    </div>
+    <p class="lead reveal" style="margin-top:24px;font-size:17px;color:var(--muted)">这套系统的价值不在"赚了多少钱"，而在<b style="color:var(--ink)">证明了：一个一人公司，从 0 开始，6 周内能靠这套 AI 经营秘书系统跑出现金流、增长和可持续节奏</b>。</p>
+  </div>
+  <div class="page-num">24 / 25</div>
+</section>
+
+<!-- ============================================================
+     P20 · 总结 + 愿景
+     ============================================================ -->
+<section class="slide grid-bg" data-nav="08">
+  <div class="statusbar">
+    <span class="live"><span class="pulse"></span>SYSTEM ONLINE</span>
+    <span class="sep">|</span>
+    <span class="crumbs"><span>成效</span><b>/</b><span class="cur">总结</span></span>
+    <span class="right">感谢评审 · THANK YOU</span>
+  </div>
+  <nav class="sidenav">
+    <div class="logo"><b>OPC</b> 冷启动技能包</div>
+    <ul class="nav">
+      <li class="done"><span class="n">01</span>封面</li>
+      <li class="done"><span class="n">02</span>场景痛点</li>
+      <li class="done"><span class="n">03</span>方法论</li>
+      <li class="done"><span class="n">04</span>架构闭环</li>
+      <li class="done"><span class="n">05</span>秘书技能组</li>
+      <li class="done"><span class="n">06</span>获客·自媒体·交付</li>
+      <li class="done"><span class="n">07</span>工具整合</li>
+      <li class="active"><span class="n">08</span>成效价值</li>
+    </ul>
+  </nav>
+  <div class="main finale">
+    <div class="kicker reveal">一句话总结 · OPC 冷启动组合技能包</div>
+    <h1 class="big reveal">一套面向一人公司的 <span class="ac">AI 经营秘书系统</span>，<br>按「梳理—合并—突破」的节奏，<br>把高并发的大脑整理成 <span class="amb">主战役、突破点<br>和可复用的经营系统</span>。</h1>
+    <div class="sign reveal">
+      <span>作者 · <b>智昊</b></span>
+      <span>OPC 高手创造赛 · 2026</span>
+      <span style="color:var(--teal)">github.com/cnzhihao/opc-bootstrap-skill</span>
+      <span style="margin-left:auto">— 谢谢评审 —</span>
+    </div>
+  </div>
+  <div class="page-num">25 / 25</div>
+</section>
+
+</div><!-- /deck-stage -->
+</div><!-- /deck-viewport -->
+
+<!-- ============================================================
+     === 控制条 + 舞台缩放 + 导航逻辑 ===
+     ============================================================ -->
+<div class="deck-controls">
+  <button id="prevBtn" title="上一页 ←">‹</button>
+  <span class="pn" id="pnTxt">01 / 25</span>
+  <button id="nextBtn" title="下一页 →">›</button>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var idx = 0;
+
+  // 舞台缩放：保持 16:9，居中 letterbox
+  function fit(){
+    var stage = document.querySelector('.deck-stage');
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var sc = Math.min(vw/1920, vh/1080);
+    stage.style.transform = 'scale(' + sc + ')';
+    stage.style.left = (vw - 1920*sc)/2 + 'px';
+    stage.style.top  = (vh - 1080*sc)/2 + 'px';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function go(n){
+    n = Math.max(0, Math.min(total-1, n));
+    slides[idx].classList.remove('active');
+    slides[n].classList.add('active');
+    idx = n;
+    document.getElementById('pnTxt').textContent = pad(n+1) + ' / ' + pad(total);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', function(){ go(idx-1); });
+  document.getElementById('nextBtn').addEventListener('click', function(){ go(idx+1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){ e.preventDefault(); go(idx+1); }
+    else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); go(idx-1); }
+    else if(e.key === 'Home'){ go(0); }
+    else if(e.key === 'End'){ go(total-1); }
+  });
+
+  // 触摸滑动
+  var tx = null;
+  document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx) > 50){ go(dx < 0 ? idx+1 : idx-1); }
+    tx = null;
+  }, {passive:true});
+
+  // 初始化首页
+  go(0);
+})();
+</script>
+</body>
+</html>
