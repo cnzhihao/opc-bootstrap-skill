@@ -1,12 +1,26 @@
 ---
 name: opc-weekly-review-generator
-description: OPC 周复盘生成。用于每周五或周末综合本周主战役、现金流、客户、内容、产品、系统和下周 48 小时突破点，生成经营判断型周复盘。
+description: OPC 周复盘生成。用于每周五或周末综合本周主战役、现金流、客户、内容、产品、系统和下周 48 小时突破点，生成经营判断型周复盘。它是 OPC 三段式周复盘链路的第一段；完整链路请由 opc-weekly-review-dispatcher 调度，再衔接 opc-content-factory-weekly-review 和 opc-content-factory-weekly-report。
 ---
 
 # OPC 周复盘生成
 
 ## 使用场景
 每周五、周末或用户说“做本周复盘”“本周收口”“总结本周经营情况”时使用。
+
+## 在三段式周复盘链路中的位置
+
+本 Skill 是 **第一段：经营周复盘**。
+
+完整链路由 `opc-weekly-review-dispatcher` 统一调度：
+
+```text
+1. opc-weekly-review-generator：经营周复盘，判断本周经营是否打赢
+2. opc-content-factory-weekly-review：内容工厂周复盘，判断内容是否服务经营主战役
+3. opc-content-factory-weekly-report：周报内容产品化，生成发布稿、长视频口播稿和多平台发布包
+```
+
+本 Skill 只负责经营判断，不直接生成内容工厂发布稿、长视频口播稿或多平台发布包。如果用户需要完整周报产品，应转入 `opc-weekly-review-dispatcher` 或继续调用后两段 Skill。
 
 ## 输入
 - 本周主战役。

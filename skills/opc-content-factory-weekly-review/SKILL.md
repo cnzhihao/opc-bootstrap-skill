@@ -1,6 +1,6 @@
 ---
 name: opc-content-factory-weekly-review
-description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服务经营主战役、是否带来客户/合作/私信/转化机会、哪些内容值得延展或暂停，并确定下周内容主战役和 48 小时突破点。
+description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服务经营主战役、是否带来客户/合作/私信/转化机会、哪些内容值得延展或暂停，并确定下周内容主战役和 48 小时突破点。它是 OPC 三段式周复盘链路的第二段；完整链路请由 opc-weekly-review-dispatcher 调度，先承接 opc-weekly-review-generator 的经营判断，再交给 opc-content-factory-weekly-report 做内容产品化。
 ---
 
 # OPC 内容周复盘
@@ -13,6 +13,28 @@ description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服
 - 对比爆款、平庸、低效内容的差异；
 - 提炼可复用经验、问题和下周动作；
 - 将内容数据转化为下周主战役与执行重点。
+
+## 在三段式周复盘链路中的位置
+
+本 Skill 是 **第二段：内容工厂周复盘**。
+
+完整链路由 `opc-weekly-review-dispatcher` 统一调度：
+
+```text
+1. opc-weekly-review-generator：经营周复盘，判断本周经营是否打赢
+2. opc-content-factory-weekly-review：内容工厂周复盘，判断内容是否服务经营主战役
+3. opc-content-factory-weekly-report：周报内容产品化，生成发布稿、长视频口播稿和多平台发布包
+```
+
+执行本 Skill 时，必须优先承接第一段的经营判断，尤其是：
+
+- 本周经营主战役是什么；
+- 是否打赢，为什么；
+- 本周现金流/客户/产品线是否有关键变化；
+- 下周唯一经营主战役是什么；
+- 哪些事项已进入暂停/不做池。
+
+本 Skill 不直接生成最终发布稿、长视频口播稿或多平台发布包；这些交给 `opc-content-factory-weekly-report`。
 
 ## 输入
 

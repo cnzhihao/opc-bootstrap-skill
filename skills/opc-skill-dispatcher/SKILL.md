@@ -249,12 +249,19 @@ opc-feishu-update-review
 核心 skill：
 
 ```text
+opc-weekly-review-dispatcher
 opc-weekly-review-generator
 opc-content-factory-weekly-review
 opc-content-factory-weekly-report
 ```
 
 处理：周复盘、内容复盘、周报生成、主战役复盘、有效/无效动作判断、下周调整建议。
+
+其中 `opc-weekly-review-dispatcher` 是周复盘域总路由：当用户要求完整周复盘、同时需要经营复盘/内容复盘/周报发布稿/长视频口播稿，或同时触发两个及以上周复盘相关 Skill 时，优先调用它统一编排三段式 Workflow：
+
+```text
+opc-weekly-review-generator → opc-content-factory-weekly-review → opc-content-factory-weekly-report
+```
 
 典型输入：
 
@@ -268,9 +275,10 @@ opc-content-factory-weekly-report
 
 调度规则：
 
-- 泛经营周复盘走 `opc-weekly-review-generator`。
-- 内容经营复盘走 `opc-content-factory-weekly-review`。
-- 叙事化周报/可公开周报走 `opc-content-factory-weekly-report`。
+- 完整周复盘链路、周末收口、同时需要经营复盘/内容复盘/周报发布稿/长视频口播稿时，优先走 `opc-weekly-review-dispatcher`。
+- 只做泛经营周复盘走 `opc-weekly-review-generator`。
+- 只做内容经营复盘走 `opc-content-factory-weekly-review`。
+- 已有复盘判断、只需要叙事化周报/可公开周报/口播稿/发布包时，走 `opc-content-factory-weekly-report`。
 - 复盘结果必须反哺 CEO 节奏、现金流判断、客户优先级、项目节奏、内容选题和资产沉淀。
 
 ## 五、总调度优先级
