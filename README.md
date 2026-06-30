@@ -188,7 +188,7 @@ opc-weekly-review-dispatcher
 
 1. `opc-weekly-review-generator`：经营周复盘，判断本周主战役、现金流、客户收入、产品服务、系统流程和下周 48 小时突破点；
 2. `opc-content-factory-weekly-review`：内容工厂周复盘，判断内容是否服务经营主战役、是否带来客户/合作/私信/转化机会，以及哪些内容值得延展或暂停；
-3. `opc-content-factory-weekly-report`：周报内容产品化，生成 `经营周复盘.md`、`内容工厂发布稿.md`、`长视频口播稿.md` 和 `05-发布包/`。
+3. `opc-content-factory-weekly-report`：周报内容产品化，生成 `经营周复盘.md`、`内容工厂发布稿.md`、`长视频口播稿.md` 和 `05-发布包/`；其中 `内容工厂发布稿.md` 必须是长文章/专栏周报形态，`长视频口播稿.md` 才使用视频脚本/口播结构。
 
 > 规则：如果只做经营复盘，可直接使用 `opc-weekly-review-generator`；如果只做内容复盘，可直接使用 `opc-content-factory-weekly-review`；如果只做已确认结论的发布稿/口播稿/发布包，可直接使用 `opc-content-factory-weekly-report`。完整链路统一从 `opc-weekly-review-dispatcher` 进入。
 
