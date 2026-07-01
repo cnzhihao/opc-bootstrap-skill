@@ -1,7 +1,8 @@
 ---
 name: opc-weekly-review-dispatcher
-description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“生成本周周报”“跑完整周复盘链路”“周末收口”“复盘并写成发布稿/口播稿”等场景时，自动编排 OPC 三段式周复盘 Workflow：先调用 opc-weekly-review-generator 做经营周复盘，再调用 opc-content-factory-weekly-review 做内容工厂周复盘，最后调用 opc-content-factory-weekly-report 生成周报发布稿、长视频口播稿和多平台发布包。它是周复盘域的上层路由器，不替代三个执行 Skill，不直接写飞书、不直接发布，涉及写入/发布必须先确认。
+description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“生成本周周报”“跑完整周复盘链路”“周末收口”“复盘并写成发布稿/口播稿”等场景时，自动编排 OPC 三段式周复盘 Workflow：先做经营周复盘，再做内容工厂周复盘，最后调用 opc-content-factory-weekly-report 生成周报发布稿、长视频口播稿和多平台发布包。它是周复盘域的统一入口，不直接写飞书、不直接发布，涉及写入/发布必须先确认。
 ---
+
 
 # Skill: opc-weekly-review-dispatcher
 
@@ -19,12 +20,12 @@ description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“
 经营周复盘 → 内容工厂周复盘 → 周报内容产品化
 ```
 
-对应 Skill：
+对应阶段：
 
 ```text
-1. opc-weekly-review-generator
-2. opc-content-factory-weekly-review
-3. opc-content-factory-weekly-report
+1. 经营周复盘
+2. 内容工厂周复盘
+3. 周报内容产品化（衔接 opc-content-factory-weekly-report）
 ```
 
 ## 二、触发场景
@@ -39,7 +40,7 @@ description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“
 - “帮我写本周周报/复盘/口播稿”
 - “我要经营复盘，也要内容发布稿”
 - “需要内容工厂发布稿和长视频口播稿”
-- 同时触发 `/opc-weekly-review-generator`、`/opc-content-factory-weekly-review`、`/opc-content-factory-weekly-report` 中两个及以上
+- 同时涉及经营复盘、内容工厂复盘、周报发布稿/口播稿/发布包中的两个及以上
 
 ## 三、核心原则
 
@@ -82,7 +83,7 @@ description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“
 
 ### 第一段：经营周复盘
 
-调用：`opc-weekly-review-generator`
+调用：周复盘生成能力
 
 目标：形成 CEO 视角的经营判断。
 
@@ -106,7 +107,7 @@ description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“
 
 ### 第二段：内容工厂周复盘
 
-调用：`opc-content-factory-weekly-review`
+调用：内容工厂周复盘能力
 
 目标：判断内容是否服务经营主战役，并确定下周内容策略。
 
@@ -151,11 +152,7 @@ description: OPC 周复盘路由 Skill。用于当用户说“做周复盘”“
 - “主战役有没有打赢”
 - “下周怎么安排”
 
-则只调用：
-
-```text
-opc-weekly-review-generator
-```
+则在本入口内只执行“经营周复盘”阶段。
 
 ### 只做内容复盘时
 
@@ -165,11 +162,7 @@ opc-weekly-review-generator
 - “哪些选题有效”
 - “下周内容怎么做”
 
-则只调用：
-
-```text
-opc-content-factory-weekly-review
-```
+则在本入口内只执行“内容工厂周复盘”阶段。
 
 ### 只做周报发布稿时
 
@@ -188,13 +181,13 @@ opc-content-factory-weekly-report
 - “做完整周复盘”
 - “周复盘 + 内容复盘 + 周报”
 - “我要发布稿和长视频口播稿”
-- 同时触发三个相关 Skill
+- 同时涉及经营复盘、内容复盘和周报产品化
 
 则固定执行：
 
 ```text
-opc-weekly-review-generator
-→ opc-content-factory-weekly-review
+经营周复盘
+→ 内容工厂周复盘
 → opc-content-factory-weekly-report
 ```
 
@@ -227,3 +220,20 @@ opc-weekly-review-generator
 4. 再调用 `opc-feishu-update-review` 或相关飞书工具执行。
 
 不得在未经确认时直接写入、改状态、归档或发布。
+
+
+
+## Suite 合并关系
+
+本 skill 是周复盘统一入口，负责串联经营周复盘、内容系统复盘、周报发布稿/视频/多平台发布包生成，并在需要归档或写入飞书时交给 `opc-feishu-update-review` 执行确认门禁。
+
+经营复盘生成与内容工厂周复盘能力已合并进本 skill 的 references，完整链路统一从本入口进入。
+
+## Reference Map
+
+- [周复盘路由规则](references/weekly-review-routing.md)
+- [周复盘生成归档说明](references/weekly-review-generator-archived-entry.md)
+- [周复盘输出标准](references/weekly-review-output-standard.md)
+- [周复盘结构](references/weekly-review-structure.md)
+- [内容工厂周复盘归档说明](references/content-weekly-review-archived-entry.md)
+- [内容工厂周复盘方法](references/content-weekly-review-method.md)

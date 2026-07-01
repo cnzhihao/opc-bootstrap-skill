@@ -3,6 +3,7 @@ name: opc-content-factory-asset-archive
 description: OPC 内容工厂资产沉淀技能。用于把文章、访谈、卡片、复盘、观点、案例和销售素材沉淀进选题库、素材库、方法论库、案例库、客户沟通材料与数据复盘库，确保内容生产不是一次性消耗，而是形成可复用经营资产。
 ---
 
+
 # OPC 内容资产沉淀
 
 ## 何时使用
@@ -80,3 +81,9 @@ description: OPC 内容工厂资产沉淀技能。用于把文章、访谈、卡
 - 分类清晰，后续可检索、可排期、可复用。
 - 既保留原始表达的锋利度，也给出跨渠道复用建议。
 - 最终必须收束到少数高优先级资产，而不是堆砌长清单。
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/asset-archive-taxonomy.md`](references/asset-archive-taxonomy.md)：内容资产归档分类法

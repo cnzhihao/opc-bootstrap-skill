@@ -3,6 +3,7 @@ name: opc-content-factory-cover-generator
 description: OPC 内容工厂封面图生成技能。用于基于文章定稿、标题、平台和视觉约束生成公众号、小红书、社交媒体等多平台封面图，处理样式推荐、签名组合、水印提取和封面生成协作流程。
 ---
 
+
 # 全媒体封面图生成器
 
 帮助用户通过 OpenCLI 插件自动生成多平台封面图。脚本已处理样式推荐、签名组合、水印提取等自动化逻辑，AI 只需关注用户交互和语义判断。
@@ -115,3 +116,9 @@ opencli cover-generator generate '<主标题>' \
 作者 @wangdefou — https://x.com/wangdefou
 CLI 化作者：https://x.com/intent/follow?screen_name=cnzhihao
 ```
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/cover-generation-guide.md`](references/cover-generation-guide.md)：封面图生成规范与验收清单

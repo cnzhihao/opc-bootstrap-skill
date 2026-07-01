@@ -3,6 +3,7 @@ name: opc-content-factory-draft-optimizer
 description: OPC 内容工厂初稿生成与五轮优化技能。用于基于访谈记录和个人写作风格报告生成初稿，并按结构逻辑、内容深度、语言风格、情感细节、去 AI 味五轮迭代，输出定稿和改稿记录。
 ---
 
+
 # 初稿生成 + 5 轮迭代优化
 
 基于访谈记录生成初稿，然后自动执行 5 轮渐进式优化，输出最终定稿。
@@ -58,3 +59,9 @@ description: OPC 内容工厂初稿生成与五轮优化技能。用于基于访
 - 第 4 轮同时写入 `04-定稿.md` 作为同步定稿版本
 - 第 5 轮需参考写作风格分析报告，全面消除 AI 痕迹
 - 所有优化结果直接写入文件，不在对话中输出正文
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/draft-optimization-checklist.md`](references/draft-optimization-checklist.md)：五轮改稿与去 AI 味检查清单

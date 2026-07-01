@@ -3,6 +3,7 @@ name: opc-content-factory-style-updater
 description: OPC 内容工厂风格更新技能。用于在作者人工修订定稿后，对比修订稿与既有写作风格报告，提炼新增偏好、修正旧规则、标注待删减内容，并验证风格是否定型。
 ---
 
+
 # 更新写作风格分析报告 + 验证风格定型
 
 对比作者修订定稿与现有风格报告，双向更新报告，验证风格一致性。
@@ -57,3 +58,9 @@ description: OPC 内容工厂风格更新技能。用于在作者人工修订定
 - 保持报告原有结构和格式，只更新具体内容
 - 不直接删除内容，用 HTML 注释标注待删减
 - 如果某维度无需更新，说明"与现有报告一致，无需调整"
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/style-system-update-rules.md`](references/style-system-update-rules.md)：个人风格系统更新规则

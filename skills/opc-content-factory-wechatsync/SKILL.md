@@ -17,6 +17,7 @@ metadata:
         bins: [wechatsync]
 ---
 
+
 # WechatSync
 
 Publish and sync Markdown/HTML articles to 29+ content platforms via CLI.
@@ -83,3 +84,9 @@ Example prompts:
 - "Which platforms am I logged into?"
 - "Extract the article from browser and save it"
 - "把这篇文章同步到掘金和知乎"
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/wechatsync-publishing-rules.md`](references/wechatsync-publishing-rules.md)：WechatSync 同步发布规则

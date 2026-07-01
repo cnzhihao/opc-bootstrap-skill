@@ -3,6 +3,7 @@ name: opc-content-factory-topic-picker
 description: OPC 内容工厂选题筛选技能。用于从日常素材库、AI HOT 日报、X 剪藏、微信剪藏等素材中批量筛选高价值选题，并生成标准化选题笔记进入热点、用户痛点或行业干货选题池。
 ---
 
+
 # 高价值选题自动筛选
 
 从日常素材中批量筛选高价值选题，自动生成标准化选题笔记存入选题库。
@@ -102,3 +103,17 @@ mkdir -p 01-选题库/01-热点选题池 01-选题库/02-用户痛点选题池 0
 - 禁止生成泛泛而谈、全网同质化的选题
 - 所有选题必须基于提供的素材，有对应支撑
 - 禁止生成不符合个人定位的选题
+
+
+
+## Suite 合并关系
+
+本 skill 是内容工厂的选题主入口，已吸收选题优先级评分能力。
+
+处理选题时先完成选题池梳理，再按商业价值、表达确定性、热点窗口、客户转化、资产沉淀价值进行优先级判断。
+
+## Reference Map
+
+- [选题选择方法](references/topic-picker-method.md)
+- [选题优先级归档说明](references/topic-prioritization-archived-entry.md)
+- [选题优先级评分规则](references/topic-prioritization-rubric.md)

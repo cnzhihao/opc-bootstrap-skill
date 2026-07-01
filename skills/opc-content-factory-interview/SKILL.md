@@ -3,6 +3,7 @@ name: opc-content-factory-interview
 description: OPC 内容工厂深度访谈技能。用于从已确定选题进入访谈，创建稿件工作空间，逐题挖掘创始人的真实经历、判断、案例和金句，形成访谈记录、核心观点、文章骨架和标题候选。
 ---
 
+
 # 深度访谈全流程
 
 从选题进入访谈，创建稿件工作空间，逐题深度访谈，归档记录，确定标题。
@@ -76,3 +77,9 @@ echo "稿件工作空间创建完成：${FOLDER_PATH}"
 - 问题必须围绕个人经历、实操经验、独家观点，禁止通用问题
 - 记录用户回答原文，不要总结或改写
 - 访谈节奏要自然，像好奇的朋友，不要像审讯
+
+## Reference Map
+
+本技能的稳定规则、模板和判断标准已沉淀到以下 references；执行时先读入口流程，再按场景读取对应 reference：
+
+- [`references/interview-question-bank.md`](references/interview-question-bank.md)：深度访谈问题库与追问方法

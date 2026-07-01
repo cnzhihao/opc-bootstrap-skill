@@ -3,6 +3,7 @@ name: opc-content-factory-channel-fit
 description: OPC 内容工厂渠道适配技能。用于判断一篇内容更适合公众号、小红书、X/Twitter、社群朋友圈、飞书文档、视频或播客，并给出主渠道、辅助渠道、不建议渠道、改写方向、发布顺序和风险提醒。
 ---
 
+
 # 渠道适配判断
 
 ## 触发场景
@@ -77,3 +78,10 @@ description: OPC 内容工厂渠道适配技能。用于判断一篇内容更适
 - 涉及医疗、金融、法律、教育承诺等高风险领域时，需要提示合规风险，并避免绝对化表达。
 - 如果用户只给一句模糊想法，不强行输出完整分发矩阵；先给轻量判断和需要补充的信息。
 - 不替代品牌负责人做最终渠道取舍；应明确推荐理由与取舍成本。
+
+## Reference Map
+
+- [渠道适配规则](references/channel-fit-rules.md)
+- [渠道适配归档说明](references/channel-fit-archived-entry.md)
+- [渠道文案模板](references/channel-copy-template.md)
+- [历史渠道适配规则](references/legacy-channel-fit-rules.md)

@@ -2,7 +2,7 @@
 
 一套面向个人 CEO / 创始人 / 自媒体经营者的 OPC（One Person Company）技能工作流集合。
 
-本仓库收录 32 个 OPC Skills，覆盖 CEO 节奏、现金流生存线、客户线索、销售报价、项目交付、飞书经营系统、内容工厂、发布分发和周复盘等场景。它的目标不是生成更长的 Todo List，而是帮助经营者把碎片化信息转译成：
+本仓库收录 19 个 OPC Skills，覆盖 CEO 节奏、现金流生存线、客户线索、销售报价、项目交付、飞书经营系统、内容工厂、发布分发和周复盘等场景。它的目标不是生成更长的 Todo List，而是帮助经营者把碎片化信息转译成：
 
 - 本周主战役
 - 必须推进事项
@@ -13,6 +13,21 @@
 > 核心方法：**梳理 — 合并 — 突破**。
 >
 > 先清空脑内信息并转译为事项，再合并成主战役 / 杠杆动作，最后选出 48 小时内要推进的突破点。
+
+---
+
+
+## 当前 suite 合并结构
+
+本仓库已从“多个平级单文件 skill”升级为“主入口 suite + 专用入口 + references 知识底座”的结构：
+
+- `opc-ceo-rhythm-workflow`：CEO 经营节奏主入口，合并每日启动、现金流、机会优先级和项目节奏判断。
+- `opc-sales-delivery-workflow`：销售交付主入口，合并线索清空、销售对话、报价澄清、产品推送和会议转交付。
+- `opc-content-factory-workflow`：内容工厂主入口，统一选题、访谈、初稿、优化、渠道、视觉、发布、归档和复盘。
+- `opc-feishu-update-review`：飞书经营系统沉淀主入口，统一经营更新、归档、知识库维护和复盘资产沉淀。
+- `opc-weekly-review-dispatcher`：周复盘统一入口，串联经营周复盘、内容复盘和发布包生成。
+
+旧的重复/子流程 skill 已合并进主入口 references，不再保留为独立目录，以保持技能包精简。
 
 ---
 
@@ -52,74 +67,36 @@ SKILL.md
 
 ---
 
-## 32 个技能总览
+## 19 个技能总览
 
-### 1. 总调度
-
-| Skill | 定位 |
-|---|---|
-| `opc-skill-dispatcher` | OPC Skill 总调度协议。用于在用户输入涉及多个 OPC skill、多个业务域，或不确定应调用哪个 skill 时，识别主流程、辅助 skill、优先级与确认门禁。 |
-| `opc-weekly-review-dispatcher` | OPC 周复盘路由 Skill。用于周末收口、完整周复盘、周报发布稿和长视频口播稿生成场景，自动编排“经营周复盘 → 内容工厂周复盘 → 周报内容产品化”三段式 Workflow。 |
-
-### 2. CEO 节奏与经营优先级
+### 1. 主入口 suite
 
 | Skill | 定位 |
 |---|---|
-| `opc-ceo-rhythm-workflow` | OPC CEO 节奏工作流。用于在脑内信息过载、机会过载、现金流压力、多项目并发、周/月启动或复盘时，按「梳理—合并—突破」生成主战役、暂停池、必须推进事项和 48 小时突破点。 |
-| `opc-daily-start-workflow` | OPC 每日 / 每周启动工作流。作为 CEO 节奏的日常入口，读取经营上下文，判断现金流、客户、项目、内容和主战役优先级，生成今日作战台、第一动作和突破点。 |
-| `opc-weekly-review-generator` | OPC 周复盘生成。用于每周五或周末综合主战役、现金流、客户、内容、产品、系统和下周突破点，生成经营判断型周复盘；它是三段式周复盘链路的第一段。 |
-| `opc-income-opportunity-prioritization` | OPC 收入机会优先级排序。用于把客户、合作方、渠道、内容、商单、培训、交付机会按 P0/P1/P2/P3 排序，决定今天和本周先推进什么。 |
-| `opc-cashflow-survival-check` | OPC 现金流生存线判断。用于计算社保、公积金、工资、固定成本、硬现金支出、待回款、本月缺口和下月风险，并给出最接近钱的动作。 |
+| `opc-skill-dispatcher` | OPC Skill 总调度协议。用于在用户输入涉及多个业务域或不确定该走哪个 skill 时，识别主流程、辅助 skill、优先级与确认门禁。 |
+| `opc-ceo-rhythm-workflow` | CEO 经营节奏主入口。合并每日启动、现金流生存线、收入机会优先级和项目节奏判断，按「梳理—合并—突破」输出主战役、暂停池和 48 小时突破点。 |
+| `opc-sales-delivery-workflow` | 销售交付主入口。合并线索清空、销售对话、报价澄清、产品推送和会议转交付，形成从客户机会到交付推进的一体化链路。 |
+| `opc-feishu-update-review` | 飞书经营系统沉淀主入口。合并经营更新、知识库维护、周/月复盘归档和字段规则，所有实际写入前必须确认。 |
+| `opc-weekly-review-dispatcher` | 周复盘统一入口。串联经营周复盘、内容工厂复盘、内容周报发布稿、长视频口播稿和多平台发布包。 |
+| `opc-content-factory-workflow` | 内容工厂总控入口。把经营目标、内容想法、选题、素材、草稿、发布和复盘串成完整内容生产线。 |
 
-### 3. 客户线索、销售沟通与报价
-
-| Skill | 定位 |
-|---|---|
-| `opc-lead-inbox-clearance` | OPC 获客线索清空。用于把口述、聊天记录、内容反馈、社群互动、老关系和转介绍整理成客户线索、观察线索和暂停线索，并生成拟写入经营系统的方案。 |
-| `opc-sales-conversation-strategy` | OPC 销售沟通策略。用于基于客户线索、沟通上下文、本周主战役和服务产品货架，判断客户阶段、成交阻力、下一句话、下一步动作，以及是否报价、暂停或发送案例。 |
-| `opc-quote-scope-clarifier` | OPC 报价前实施范围澄清。用于客户报价前明确需求、实施范围、交付边界、投入天数、风险、付款方式和案例价值，避免报价过低或范围过大。 |
-| `opc-product-push-decision` | OPC 产品 / 项目当前是否该推判断。用于判断某个产品、工具、项目或 demo 当前应该立刻售卖、渠道测试、做内容资产、内部使用，还是进入暂停池。 |
-
-### 4. 项目交付、会议与飞书经营系统
+### 2. 内容工厂专用入口
 
 | Skill | 定位 |
 |---|---|
-| `opc-project-rhythm-manager` | OPC 项目节奏管理。用于读取项目总表、今日作战台和交付项目资料，判断项目阶段、当前卡点、交付风险和下一次关键交付动作。 |
-| `opc-meeting-summary-to-delivery` | OPC 会议纪要转交付动作。用于把会议纪要、录音转写、口述或客户沟通摘要转化为项目状态变化、客户反馈、责任人、下一步动作和交付物变化。 |
-| `opc-feishu-update-review` | OPC 飞书更新与复盘工作流。用于在完成每日/每周工作后，把经营进展整理成拟更新方案，经确认后再同步到飞书多维表格、方法文档、周/月复盘库。 |
-| `opc-feishu-kb-maintenance` | OPC 飞书知识库维护。用于维护 OPC 秘书飞书文件夹、多维表格、秘书工作方法、周月复盘库、月份文件夹、归档与暂停池。 |
-
-### 5. 内容工厂总控与基础设施
-
-| Skill | 定位 |
-|---|---|
-| `opc-content-factory-workflow` | OPC 内容工厂总控工作流。用于把经营目标、内容想法、选题、素材、草稿、发布和复盘串成完整内容生产线，并按「梳理—合并—突破」生成内容主战役、暂停池和 48 小时突破点。 |
-| `opc-content-factory-initializer` | OPC 内容工厂初始化。用于在飞书云盘中创建或补齐「05 自媒体内容工厂」工作空间，初始化目录结构、核心看板和模板文档。 |
-| `opc-content-factory-asset-archive` | OPC 内容工厂资产沉淀。用于把文章、访谈、卡片、复盘、观点、案例和销售素材沉淀进选题库、素材库、方法论库、案例库、客户沟通材料与数据复盘库。 |
-
-### 6. 选题、访谈、初稿与风格
-
-| Skill | 定位 |
-|---|---|
-| `opc-content-factory-topic-picker` | OPC 内容工厂选题筛选。用于从日常素材库、AI HOT 日报、X 剪藏、微信剪藏等素材中批量筛选高价值选题，并生成标准化选题笔记。 |
-| `opc-content-factory-topic-prioritization` | OPC 内容工厂选题优先级。用于按照经营相关性、现金流/客户机会、资产价值、渠道适配、生产难度和个人真实度，将选题分为 P0/P1/P2/P3。 |
-| `opc-content-factory-interview` | OPC 内容工厂深度访谈。用于从已确定选题进入访谈，创建稿件工作空间，逐题挖掘真实经历、判断、案例和金句，形成访谈记录、核心观点、文章骨架和标题候选。 |
-| `opc-content-factory-draft-optimizer` | OPC 内容工厂初稿生成与五轮优化。用于基于访谈记录和个人写作风格报告生成初稿，并按结构逻辑、内容深度、语言风格、情感细节、去 AI 味五轮迭代。 |
-| `opc-content-factory-style-updater` | OPC 内容工厂风格更新。用于在作者人工修订定稿后，对比修订稿与既有写作风格报告，提炼新增偏好、修正旧规则、标注待删减内容，并验证风格是否定型。 |
-| `opc-content-factory-weekly-report` | OPC 内容工厂周报生成。用于把一周碎片化事件重构成有故事感、可追更的周报内容产品，完成经营周复盘、内容工厂发布稿、长视频口播稿和多平台发布包生成；它是三段式周复盘链路的第三段。 |
-
-### 7. 渠道适配、封面、卡片与发布
-
-| Skill | 定位 |
-|---|---|
-| `opc-content-factory-channel-fit` | OPC 内容工厂渠道适配。用于判断一篇内容更适合公众号、小红书、X/Twitter、社群朋友圈、飞书文档、视频或播客，并给出发布顺序和改写方向。 |
-| `opc-content-channel-fit` | OPC 内容资产与渠道分发判断。用于判断文章、蓝皮书、小报、商单材料、demo 是否适合渠道分发，以及如何从内容转化到咨询、成交或一对一交付。 |
-| `opc-content-factory-cover-generator` | OPC 内容工厂封面图生成。用于基于文章定稿、标题、平台和视觉约束生成公众号、小红书、社交媒体等多平台封面图。 |
-| `opc-content-factory-social-card` | OPC 内容工厂社交卡片生成。用于把文章、脚本、字幕、截图、产品说明、照片或观点材料转化为小红书图文卡片、公众号封面对、文章封面和社交传播图。 |
-| `opc-content-factory-publisher` | OPC 内容工厂多平台发布包。用于基于定稿生成公众号、小红书、X/Twitter、社群、朋友圈、知识星球等平台适配版本，可衔接封面图生成、同步发布和复盘。 |
-| `opc-content-factory-wechatsync` | OPC 内容工厂 WechatSync 同步。用于将 Markdown 或 HTML 文章同步到微信公众号、知乎、掘金等平台草稿箱，检查平台登录态，处理封面、标题和发布准备。 |
-| `opc-content-factory-x-article-publisher` | OPC 内容工厂 X/Twitter Article 发布。用于将 Markdown 文章发布到 X Articles 编辑器，保留富文本格式，处理封面上传、Markdown 转换和 X Premium 长文发布准备。 |
-| `opc-content-factory-weekly-review` | OPC 内容工厂周复盘。用于每周复盘内容是否服务经营主战役、是否带来客户/合作/私信/转化机会，确定下周内容主战役和 48 小时突破点；它是三段式周复盘链路的第二段。 |
+| `opc-content-factory-initializer` | 初始化或补齐「05 自媒体内容工厂」工作空间、目录结构、核心看板和模板文档。 |
+| `opc-content-factory-topic-picker` | 内容选题选择与优先级判断，已吸收原选题优先级评分能力。 |
+| `opc-content-factory-interview` | 从已确定选题进入深度访谈，形成访谈记录、核心观点、文章骨架和标题候选。 |
+| `opc-content-factory-draft-optimizer` | 基于访谈记录和个人写作风格生成初稿，并进行结构、深度、风格、情感细节和去 AI 味优化。 |
+| `opc-content-factory-style-updater` | 在作者人工修订定稿后，更新写作风格报告和新增偏好。 |
+| `opc-content-factory-weekly-report` | 内容工厂周报生成，输出内容工厂发布稿、长视频口播稿和多平台发布包。 |
+| `opc-content-factory-channel-fit` | 判断内容适合公众号、小红书、X/Twitter、社群朋友圈、飞书文档、视频或播客，并给出发布顺序和改写方向。 |
+| `opc-content-factory-cover-generator` | 基于文章定稿、标题、平台和视觉约束生成多平台封面图。 |
+| `opc-content-factory-social-card` | 将文章、脚本、截图、观点材料转化为小红书图文卡片、公众号封面对和社交传播图。 |
+| `opc-content-factory-publisher` | 生成公众号、小红书、X/Twitter、社群、朋友圈、知识星球等平台适配发布包。 |
+| `opc-content-factory-wechatsync` | 将 Markdown 或 HTML 文章同步到微信公众号、知乎、掘金等平台草稿箱前的准备与检查。 |
+| `opc-content-factory-x-article-publisher` | 将 Markdown 文章发布到 X Articles 编辑器前的格式、封面和富文本准备。 |
+| `opc-content-factory-asset-archive` | 将文章、访谈、卡片、复盘、观点、案例和销售素材沉淀进内容资产库。 |
 
 ---
 
@@ -130,67 +107,51 @@ SKILL.md
 ```text
 opc-skill-dispatcher
   → opc-ceo-rhythm-workflow
-  → opc-daily-start-workflow / opc-weekly-review-dispatcher / opc-weekly-review-generator
 ```
 
-适用于：今天怎么安排、本周怎么打、机会太多、脑子很乱、现金流紧张、多项目并发。
+适用于：今天怎么安排、本周怎么打、机会太多、脑子很乱、现金流紧张、多项目并发、项目推进卡点。
 
-### 客户与收入入口
+### 客户、收入与交付入口
 
 ```text
-opc-lead-inbox-clearance
-  → opc-sales-conversation-strategy
-  → opc-quote-scope-clarifier
-  → opc-income-opportunity-prioritization
-  → opc-cashflow-survival-check
+opc-sales-delivery-workflow
+  → 必要时衔接 opc-ceo-rhythm-workflow / opc-feishu-update-review
 ```
 
-适用于：客户线索整理、销售下一句话、是否报价、如何报价、先收哪笔钱。
+适用于：客户线索整理、销售下一句话、是否报价、如何报价、产品是否该推、会议纪要如何转交付。
 
-### 交付与飞书入口
+### 飞书经营系统入口
 
 ```text
-opc-project-rhythm-manager
-  → opc-meeting-summary-to-delivery
-  → opc-feishu-update-review
-  → opc-feishu-kb-maintenance
+opc-feishu-update-review
 ```
 
-适用于：项目卡点、会议纪要转行动、同步飞书、维护经营系统。
+适用于：同步今天工作、沉淀经营判断、更新客户/项目/内容/回款记录、维护知识库和归档周/月复盘。
 
 ### 内容工厂入口
 
 ```text
 opc-content-factory-workflow
   → opc-content-factory-topic-picker
-  → opc-content-factory-topic-prioritization
   → opc-content-factory-interview
   → opc-content-factory-draft-optimizer
-  → opc-content-factory-publisher
-  → opc-content-factory-weekly-review
+  → opc-content-factory-channel-fit
+  → opc-content-factory-publisher / opc-content-factory-social-card / opc-content-factory-cover-generator
 ```
 
 适用于：从素材到选题、从选题到访谈、从访谈到定稿、从定稿到多平台分发和复盘。
-
 
 ### 周复盘完整链路入口
 
 ```text
 opc-weekly-review-dispatcher
-  → opc-weekly-review-generator
-  → opc-content-factory-weekly-review
   → opc-content-factory-weekly-report
+  → opc-feishu-update-review
 ```
 
 适用于：周末收口、完整周复盘、本周经营判断、内容工厂复盘、内容工厂发布稿、长视频口播稿和多平台周报发布包。
 
-三段式关系：
-
-1. `opc-weekly-review-generator`：经营周复盘，判断本周主战役、现金流、客户收入、产品服务、系统流程和下周 48 小时突破点；
-2. `opc-content-factory-weekly-review`：内容工厂周复盘，判断内容是否服务经营主战役、是否带来客户/合作/私信/转化机会，以及哪些内容值得延展或暂停；
-3. `opc-content-factory-weekly-report`：周报内容产品化，生成 `经营周复盘.md`、`内容工厂发布稿.md`、`长视频口播稿.md` 和 `05-发布包/`；其中 `内容工厂发布稿.md` 必须是长文章/专栏周报形态，`长视频口播稿.md` 才使用视频脚本/口播结构。
-
-> 规则：如果只做经营复盘，可直接使用 `opc-weekly-review-generator`；如果只做内容复盘，可直接使用 `opc-content-factory-weekly-review`；如果只做已确认结论的发布稿/口播稿/发布包，可直接使用 `opc-content-factory-weekly-report`。完整链路统一从 `opc-weekly-review-dispatcher` 进入。
+三段式关系已经合并进 `opc-weekly-review-dispatcher` 的 references：经营周复盘、内容工厂周复盘和周报内容产品化不再拆成独立旧目录。
 
 ---
 

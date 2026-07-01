@@ -3,6 +3,7 @@ name: opc-ceo-rhythm-workflow
 description: OPC CEO 节奏工作流。用于智昊/OPC 创始人在脑内信息过载、机会过载、现金流压力、多项目并发、周/月启动或复盘时，严格按照「梳理—合并—突破」工作法，把混乱信息转译为本周主战役、暂停池、必须推进事项和 48 小时突破点。触发词包括：梳理一下、合并一下、找突破点、今天/本周怎么安排、启动 CEO 节奏、OPC 节奏工作流、不要做 todolist、脑子很乱、机会太多、帮我定主战役。
 ---
 
+
 # OPC CEO 节奏工作流
 
 ## 目标
@@ -95,21 +96,18 @@ description: OPC CEO 节奏工作流。用于智昊/OPC 创始人在脑内信息
 - **第一动作**：今天立刻能开始的 15-30 分钟动作；
 - **不做什么**：至少 2-3 个暂停项。
 
-## 调度现有 OPC skill
+## 与其他 OPC suite 协作
 
-本 skill 是总控协议。必要时调用或承接以下 skill：
+本 skill 是 CEO 经营节奏总控。必要时衔接以下保留主入口：
 
-| 场景 | 对应 skill |
+| 场景 | 对应入口 |
 | --- | --- |
-| 每日/每周启动 | `opc-daily-start-workflow` |
-| 现金流和生存线判断 | `opc-cashflow-survival-check` |
-| 收入机会排序 | `opc-income-opportunity-prioritization` |
-| 产品/项目是否该推 | `opc-product-push-decision` |
-| 内容和渠道适配 | `opc-content-channel-fit` |
-| 报价和范围澄清 | `opc-quote-scope-clarifier` |
-| 每日/每周收口复盘 | `opc-feishu-update-review` |
-| 周复盘生成 | `opc-weekly-review-generator` |
-| 飞书系统维护 | `opc-feishu-kb-maintenance` |
+| 客户推进、报价、会议转交付 | `opc-sales-delivery-workflow` |
+| 内容生产、渠道适配、发布复盘 | `opc-content-factory-workflow` |
+| 每日/每周经营信息沉淀、飞书归档 | `opc-feishu-update-review` |
+| 周复盘完整链路 | `opc-weekly-review-dispatcher` |
+
+每日启动、现金流生存线、收入机会优先级和项目节奏已作为本 skill 内部 references 承接，不再路由到独立旧目录。
 
 ## 输出格式
 
@@ -182,3 +180,24 @@ description: OPC CEO 节奏工作流。用于智昊/OPC 创始人在脑内信息
 - 不是任务清单，而是经营判断。
 
 更多细则见 `references/rhythm-protocol.md` 与 `references/output-template.md`。
+
+
+
+## Suite 合并关系
+
+本 skill 是 CEO 经营节奏 suite 的主入口，负责统一承接每日启动、现金流生存线、机会优先级和项目节奏判断。
+
+每日启动、现金流生存线、收入机会优先级和项目节奏能力已合并进本 skill 的 references；当问题涉及多类经营事项时，统一在本 skill 内完成“梳理—合并—突破”。
+
+## Reference Map
+
+- [CEO 节奏方法](references/ceo-rhythm-method.md)
+- [CEO 经营节奏 suite 地图](references/ceo-suite-map.md)
+- [输出模板](references/output-template.md)
+- [节奏协议](references/rhythm-protocol.md)
+- [每日启动归档说明](references/daily-start-archived-entry.md)
+- [每日作战台规则](references/daily-battle-board-rules.md)
+- [现金流生存线](references/cashflow-survival-line.md)
+- [现金流公式](references/cashflow-formula.md)
+- [机会优先级评分](references/opportunity-prioritization-rubric.md)
+- [项目节奏规则](references/project-rhythm-rules.md)
