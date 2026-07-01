@@ -45,3 +45,14 @@
 ## 后续维护建议
 
 当该技能出现稳定的新判断、模板、字段、命名规则或案例时，优先追加到本 reference，而不是继续膨胀 `SKILL.md`。
+
+## 归档与脚本化交接
+
+`opc-weekly-review-dispatcher` 不持有飞书写入脚本，也不直接创建、更新或归档飞书文档。周复盘链路完成后，按产物类型交给对应业务 Skill 承接：
+
+- 经营周复盘、月复盘、经营判断沉淀 → `opc-feishu-update-review`，按其 `references/script-prompts.md` 中的 `scripts/archive-review-doc.mjs` 规划执行。
+- 内容工厂周报 → `opc-content-factory-weekly-report`，按其 `references/script-prompts.md` 中的 `scripts/archive-content-weekly-report.mjs` 规划执行。
+- 内容工厂发布稿 / 公众号主稿 → `opc-content-factory-weekly-report`，按 `scripts/archive-article-draft.mjs` 规划执行。
+- 长视频口播稿 → `opc-content-factory-weekly-report`，按 `scripts/archive-video-script.mjs` 规划执行。
+
+交接前需要输出拟归档清单：产物类型、标题、月份目录、W 周期命名、是否需要创建飞书云文档、预期返回链接。用户明确确认后，再由目标 Skill 进入 dry-run / execute 流程。

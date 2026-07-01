@@ -108,6 +108,24 @@
 1.
 ```
 
+## 九、脚本化执行交接规则
+
+`opc-skill-dispatcher` 只负责路由、边界判断和确认门禁，不持有业务执行脚本，也不直接读写飞书、发布平台或客户消息。
+
+当用户请求涉及脚本化执行时，按业务归属交给对应 Skill：
+
+- 飞书经营系统更新、脑内清空池、主战役、客户线索、项目变动、现金流、复盘归档 → `opc-feishu-update-review`。
+- 内容工厂空间初始化、目录、模板、看板 → `opc-content-factory-initializer`。
+- 内容素材读取、选题笔记、选题池写入 → `opc-content-factory-topic-picker`。
+- 内容工厂周报、公众号主稿、长视频口播稿归档 → `opc-content-factory-weekly-report`。
+- 写作风格报告读取、更新和变更记录 → `opc-content-factory-style-updater`。
+- 访谈工作区、访谈记录和访谈摘要 → `opc-content-factory-interview`。
+- 稿件版本读取、归档和校验 → `opc-content-factory-draft-optimizer`。
+- CEO 节奏、主战役、待决策事项的读取与汇总 → `opc-ceo-rhythm-workflow`。
+- 客户线索、交付项目、项目状态、回款记录和销售漏斗分析 → `opc-sales-delivery-workflow`。
+
+交接前先说明主流程、辅助 Skill、拟执行对象和确认门禁；涉及飞书写入、归档、发布、删除、状态迁移或对外承诺时，先输出拟操作方案，等待用户明确确认。
+
 ## 十、默认输出格式
 
 调度判断类输出：

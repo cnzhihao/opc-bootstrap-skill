@@ -28,7 +28,7 @@
 - `SKILL.md` 只保留触发场景、入口流程、确认门禁和 reference map。
 - `references/` 承载规则、模板、字段说明、判断标准、迁移后的子流程和详细 SOP。
 - 已合并的旧子流程不再保留独立目录，避免技能包膨胀和重复路由。
-- 当前版本暂不提供 `scripts/`，脚本固化会在后续工作流稳定后再做。
+- 脚本化执行采用 Skill 内归属：提示词写入 `references/script-prompts.md`，真实脚本在工作流稳定后放入对应 `skills/<skill>/scripts/`，不在仓库根目录集中堆放脚本。
 
 ---
 
@@ -61,6 +61,16 @@ opc-bootstrap-skill/
 SKILL.md
 references/*.md
 ```
+
+涉及脚本化执行的 skill 可以增加：
+
+```text
+references/script-prompts.md
+scripts/<script-name>.mjs
+scripts/<script-name>.py
+```
+
+其中 `scripts/` 只放真实可执行脚本，不放 README；脚本说明、执行提示词、确认门禁和验收标准统一写入 `references/script-prompts.md`。
 
 ---
 
@@ -150,6 +160,39 @@ opc-weekly-review-dispatcher
 
 ---
 
+
+## Skill 脚本化执行规范
+
+本仓库采用“业务脚本归属对应 Skill”的设计：
+
+- 不在仓库根目录新增通用 `scripts/`。
+- 不在 `scripts/` 目录放 README 或说明文件。
+- 每个 Skill 的脚本执行提示词写入 `references/script-prompts.md`。
+- 真实脚本只在工作流稳定后放入对应 `skills/<skill>/scripts/`。
+- 飞书 CLI、云文档、多维表格、云盘和归档操作默认使用 `.mjs`，通过 `$BOX_AGENT_NODE` 执行。
+- 数据清洗、CSV/Excel/Docx/PDF 处理、批量评分和统计分析可使用 `.py`，通过 `$BOX_AGENT_PYTHON` 执行。
+- 调用飞书业务命令时必须显式使用用户身份，即 `--as user`。
+- 写入型脚本默认 dry-run；只有用户确认拟操作方案后，才进入 execute 模式。
+- AI 执行真实脚本前，必须先确认脚本文件存在；`script-prompts.md` 中列出的脚本清单可以是规划，不代表脚本已经实现。
+
+### 已纳入脚本化提示词的 Skill
+
+| Skill | 脚本提示词 | 脚本归属重点 |
+|---|---|---|
+| `opc-feishu-update-review` | `references/script-prompts.md` | 飞书经营系统、脑内清空池、主战役、客户线索、项目变动、现金流、复盘归档 |
+| `opc-content-factory-initializer` | `references/script-prompts.md` | 内容工厂空间、目录、模板、看板初始化 |
+| `opc-content-factory-weekly-report` | `references/script-prompts.md` | 内容周报、公众号主稿、长视频口播稿归档和校验 |
+| `opc-content-factory-topic-picker` | `references/script-prompts.md` | 素材读取、选题笔记、选题池写入和候选选题评分 |
+| `opc-content-factory-style-updater` | `references/script-prompts.md` | 风格报告读取、更新、变更记录和人工修订对比 |
+| `opc-content-factory-interview` | `references/script-prompts.md` | 访谈工作区、访谈记录、逐题追加和摘要归档 |
+| `opc-content-factory-draft-optimizer` | `references/script-prompts.md` | 访谈读取、稿件版本归档、最终稿归档和版本校验 |
+| `opc-ceo-rhythm-workflow` | `references/script-prompts.md` | 主战役、周节奏、待决策事项读取和 CEO 仪表盘汇总 |
+| `opc-sales-delivery-workflow` | `references/script-prompts.md` | 客户线索、交付项目、项目状态、回款记录和销售漏斗分析 |
+
+Dispatcher 类 Skill 不持有业务执行脚本：`opc-skill-dispatcher` 只负责路由和确认边界，`opc-weekly-review-dispatcher` 只负责编排周复盘链路；具体飞书读写和归档由对应业务 Skill 承接。
+
+---
+
 ## 安装方式
 
 ### 克隆仓库
@@ -198,8 +241,8 @@ opc-meeting-summary-to-delivery
 opc-content-channel-fit
 opc-content-factory-topic-prioritization
 opc-feishu-kb-maintenance
-opc-weekly-review-generator
-opc-content-factory-weekly-review
+经营周复盘生成旧入口
+内容工厂周复盘旧入口
 ```
 
 这些目录对应的能力已经迁移到：
@@ -281,7 +324,7 @@ description: 一句话说明这个 skill 的用途、触发场景和边界。
 - 如果只是补充规则、模板、字段解释、判断标准，优先写入 `references/`。
 - 如果一个能力只是主流程的阶段，不优先新增独立 skill。
 - 当多个场景共享同一条经营链路时，优先合并为 suite 主入口。
-- 当工作流稳定、重复执行且可验证后，再考虑补充 `scripts/`。
+- 当工作流稳定、重复执行且可验证后，再在对应 Skill 内补充 `scripts/`；脚本说明仍放在 `references/script-prompts.md`，不在 `scripts/` 下新增 README。
 
 ---
 

@@ -1,11 +1,11 @@
 # 内容工厂周复盘方法
 
-适用技能：`opc-content-factory-weekly-review`  
+适用入口：`opc-weekly-review-dispatcher`
 业务域：内容复盘
 
 ## 作用
 
-本 reference 用于承载 `opc-content-factory-weekly-review` 中相对稳定、可复用的判断标准、流程清单、模板或验收规则。入口 `SKILL.md` 负责触发条件、执行边界和用户交互；本文件负责沉淀执行时可反复引用的细则。
+本 reference 用于承载内容工厂周复盘流程中相对稳定、可复用的判断标准、流程清单、模板或验收规则。入口 `SKILL.md` 负责触发条件、执行边界和用户交互；本文件负责沉淀执行时可反复引用的细则。
 
 ## 核心使用方式
 

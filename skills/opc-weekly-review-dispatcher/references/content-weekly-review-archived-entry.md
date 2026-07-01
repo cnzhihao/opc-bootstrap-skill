@@ -1,10 +1,10 @@
-# 已合并旧入口：opc-content-factory-weekly-review
+# 已合并旧入口：内容工厂周复盘
 
-> 来源：已合并旧入口 `opc-content-factory-weekly-review`。本文件用于保留旧入口的触发、流程与历史说明；当前主入口为 `opc-weekly-review-dispatcher`。
+> 来源：已合并旧入口“内容工厂周复盘”。本文件用于保留旧入口的触发、流程与历史说明；当前主入口为 `opc-weekly-review-dispatcher`。
 
 ---
-name: opc-content-factory-weekly-review
-description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服务经营主战役、是否带来客户/合作/私信/转化机会、哪些内容值得延展或暂停，并确定下周内容主战役和 48 小时突破点。它是 OPC 三段式周复盘链路的第二段；完整链路请由 opc-weekly-review-dispatcher 调度，先承接 opc-weekly-review-generator 的经营判断，再交给 opc-content-factory-weekly-report 做内容产品化。
+name: archived-content-factory-weekly-review
+description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服务经营主战役、是否带来客户/合作/私信/转化机会、哪些内容值得延展或暂停，并确定下周内容主战役和 48 小时突破点。它是 OPC 三段式周复盘链路的第二段；完整链路请由 opc-weekly-review-dispatcher 调度，先承接经营周复盘判断，再交给 opc-content-factory-weekly-report 做内容产品化。
 ---
 
 
@@ -26,8 +26,8 @@ description: OPC 内容工厂周复盘技能。用于每周复盘内容是否服
 完整链路由 `opc-weekly-review-dispatcher` 统一调度：
 
 ```text
-1. opc-weekly-review-generator：经营周复盘，判断本周经营是否打赢
-2. opc-content-factory-weekly-review：内容工厂周复盘，判断内容是否服务经营主战役
+1. 经营周复盘：判断本周经营是否打赢
+2. 内容工厂周复盘：判断内容是否服务经营主战役
 3. opc-content-factory-weekly-report：周报内容产品化，生成发布稿、长视频口播稿和多平台发布包
 ```
 

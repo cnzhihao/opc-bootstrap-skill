@@ -1,7 +1,86 @@
-[Full tool-call argument omitted from model history]
-Tool: write_file
-Argument: content
-Path: /Users/xuzhihao/.box-agent/skills/opc-feishu-update-review/references/weekly-review-template.md
-Lines: 67
-Characters: 980
-Reason: generated artifact/script content was already written to disk; read the file with offset/limit if exact content is needed.
+# 周复盘归档模板
+
+适用技能：`opc-feishu-update-review`
+业务域：经营周复盘 / 内容工厂周复盘 / 月度复盘归档
+
+## 使用方式
+
+当用户确认需要将周复盘沉淀到飞书系统时，先基于本模板生成拟归档内容，再按 `references/script-prompts.md` 的确认门禁执行归档动作。
+
+## 标题规则
+
+优先沿用目标月份目录中已有 W 周期命名格式：
+
+```text
+YYYY-MM-Wx｜类型｜标题/日期
+```
+
+示例：
+
+```text
+2026-07-W1｜经营周复盘｜2026-07-01
+2026-07-W1｜内容工厂周报｜AI 时代个体公司的交付系统
+```
+
+## 正文结构
+
+```markdown
+# <标题>
+
+## 1. 本周主战役
+
+- 主战役：
+- 胜负手：
+- 48 小时突破点：
+
+## 2. 本周关键进展
+
+| 事项 | 进展 | 证据/链接 | 下一步 |
+|---|---|---|---|
+|  |  |  |  |
+
+## 3. 经营判断更新
+
+- 新增判断：
+- 被验证判断：
+- 被推翻/需要修正判断：
+
+## 4. 派生事项
+
+### 客户线索
+
+-
+
+### 内容选题
+
+-
+
+### 服务产品
+
+-
+
+### 项目变动
+
+-
+
+### 现金流 / 回款
+
+-
+
+## 5. 暂停 / 不做池
+
+-
+
+## 6. 下周动作
+
+- 必须推进：
+- 可顺手推进：
+- 暂不推进：
+```
+
+## 归档验收
+
+- 已确认目标月份目录。
+- 已确认文档标题符合该月份 W 周期命名格式。
+- 已确认归档内容与用户确认版本一致。
+- 已返回飞书文档链接或明确失败原因。

@@ -1,11 +1,11 @@
 # 周复盘生成标准
 
-适用技能：`opc-weekly-review-generator`  
+适用入口：`opc-weekly-review-dispatcher`
 业务域：周复盘
 
 ## 作用
 
-本 reference 用于承载 `opc-weekly-review-generator` 中相对稳定、可复用的判断标准、流程清单、模板或验收规则。入口 `SKILL.md` 负责触发条件、执行边界和用户交互；本文件负责沉淀执行时可反复引用的细则。
+本 reference 用于承载经营周复盘生成流程中相对稳定、可复用的判断标准、流程清单、模板或验收规则。入口 `SKILL.md` 负责触发条件、执行边界和用户交互；本文件负责沉淀执行时可反复引用的细则。
 
 ## 核心使用方式
 
