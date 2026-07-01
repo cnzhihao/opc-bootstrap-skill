@@ -1,0 +1,10 @@
+{
+  "archiveType": "weekly-review",
+  "period": "2026-W01",
+  "title": "2026-01-W1｜经营周复盘｜示例",
+  "parentToken": "",
+  "contentMarkdown": "# 2026-01-W1｜经营周复盘｜示例\n\n## 本周主战役\n- 示例主战役\n\n## 必须推进事项\n- 示例事项 A\n- 示例事项 B\n\n## 暂停 / 不做池\n- 示例暂停事项\n\n## 48 小时突破点\n- 示例突破点",
+  "dryRunNotes": [
+    "示例 payload 不包含真实 parentToken；execute 前应替换为目标飞书文件夹 token。"
+  ]
+}

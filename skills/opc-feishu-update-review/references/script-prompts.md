@@ -18,16 +18,16 @@
 
 ## 脚本清单
 
-| 脚本 | 用途 | 类型 | 确认门禁 |
-|---|---|---|---|
-| `scripts/sync-brain-dump-pool.mjs` | 将新增经营信息写入脑内清空池 | 飞书多维表格 | 写入前确认事项列表和字段 |
-| `scripts/update-main-campaign.mjs` | 更新本周主战役、杠杆动作、48 小时突破点 | 飞书多维表格 / 文档 | 状态迁移和覆盖前确认 |
-| `scripts/upsert-customer-lead.mjs` | 新增或更新客户线索 | 飞书多维表格 | 确认客户名、阶段、来源和下一步 |
-| `scripts/upsert-content-topic.mjs` | 派生并写入内容选题 | 飞书多维表格 | 确认选题池、标题、优先级 |
-| `scripts/upsert-service-product.mjs` | 派生并写入服务产品想法 | 飞书多维表格 | 确认产品名、目标客户、状态 |
-| `scripts/upsert-project-change.mjs` | 写入项目变动或交付状态变化 | 飞书多维表格 | 确认项目、变动内容、风险 |
-| `scripts/upsert-cashflow-record.mjs` | 写入现金流或回款记录 | 飞书多维表格 | 确认金额、对象、日期和状态 |
-| `scripts/archive-review-doc.mjs` | 创建并归档日 / 周 / 月复盘文档 | 飞书云文档 | 确认标题、月份目录、归档类型 |
+| 脚本 | 状态 | 用途 | 类型 | 确认门禁 |
+|---|---|---|---|---|
+| `scripts/append-inbox-item.mjs` | 待实现 | 将新增经营信息写入脑内清空池 | 飞书多维表格 | 写入前确认事项列表和字段 |
+| `scripts/upsert-main-campaign.mjs` | 待实现 | 更新本周主战役、杠杆动作、48 小时突破点 | 飞书多维表格 / 文档 | 状态迁移和覆盖前确认 |
+| `scripts/upsert-customer-lead.mjs` | 待实现 | 新增或更新客户线索 | 飞书多维表格 | 确认客户名、阶段、来源和下一步 |
+| `scripts/upsert-content-topic.mjs` | 待实现 | 派生并写入内容选题 | 飞书多维表格 | 确认选题池、标题、优先级 |
+| `scripts/upsert-service-product.mjs` | 待实现 | 派生并写入服务产品想法 | 飞书多维表格 | 确认产品名、目标客户、状态 |
+| `scripts/upsert-project-change.mjs` | 待实现 | 写入项目变动或交付状态变化 | 飞书多维表格 | 确认项目、变动内容、风险 |
+| `scripts/upsert-cashflow-record.mjs` | 待实现 | 写入现金流或回款记录 | 飞书多维表格 | 确认金额、对象、日期和状态 |
+| `scripts/archive-review-doc.mjs` | 已实现 MVP | 创建并归档日 / 周 / 月复盘文档 | 飞书云文档 | 确认标题、月份目录、归档类型 |
 
 ## 标准执行提示词
 
@@ -39,10 +39,12 @@
 4. 使用 `$BOX_AGENT_NODE` 或 `$BOX_AGENT_PYTHON` 运行脚本。
 5. 返回结构化结果：成功项、失败项、飞书链接/记录 ID、待确认事项。
 
+`archive-review-doc.mjs` 的飞书创建命令依据 `lark-doc` Skill：真实执行时应调用 `lark-cli docs +create --api-version v2 --as user --content <DocxXML>`，如指定归档目录则追加 `--parent-token <folder_token>`。
+
 示例命令：
 
 ```bash
-$BOX_AGENT_NODE skills/opc-feishu-update-review/scripts/archive-review-doc.mjs --payload tmp/archive-review.json
+$BOX_AGENT_NODE skills/opc-feishu-update-review/scripts/archive-review-doc.mjs --payload skills/opc-feishu-update-review/examples/archive-review-doc.payload.example.json
 $BOX_AGENT_NODE skills/opc-feishu-update-review/scripts/archive-review-doc.mjs --payload tmp/archive-review.json --execute
 ```
 
