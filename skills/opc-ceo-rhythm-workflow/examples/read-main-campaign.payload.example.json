@@ -1,0 +1,8 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_main_campaign",
+  "viewId": "vew_current_week",
+  "limit": 20,
+  "fieldIds": ["本周主战役", "杠杆动作", "48小时突破点", "状态", "负责人"],
+  "dryRunNotes": ["确认视图已筛选到当前周"]
+}

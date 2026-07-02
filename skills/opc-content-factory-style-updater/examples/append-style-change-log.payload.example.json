@@ -1,0 +1,13 @@
+{
+  "title": "追加风格变更记录",
+  "contentMarkdown": "追加风格变更记录 示例内容",
+  "documentId": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "追加风格变更记录",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "追加风格变更记录",
+    "状态": "示例"
+  }
+}

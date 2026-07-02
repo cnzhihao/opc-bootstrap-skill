@@ -1,0 +1,28 @@
+{
+  "week": {
+    "year": 2026,
+    "month": 6,
+    "weekNumber": 4,
+    "weekCode": "2026-06-W4",
+    "monthFolderName": "2026-06",
+    "dateRange": "2026-06-22~2026-06-28",
+    "title": "从交付经验提炼内容资产"
+  },
+  "sources": [
+    {
+      "name": "内容发布台账",
+      "type": "base",
+      "appToken": "bascn_example",
+      "tableId": "tbl_example",
+      "viewId": "vew_example",
+      "filter": "CurrentValue.[周周期] = \"2026-06-W4\"",
+      "pageSize": 50
+    },
+    {
+      "name": "本周访谈记录",
+      "type": "docx",
+      "token": "docx_example",
+      "format": "markdown"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "base": {
+    "appToken": "app_token_here",
+    "tableId": "tbl_token_here"
+  },
+  "viewId": "vew_here",
+  "filter": "状态=候选"
+}

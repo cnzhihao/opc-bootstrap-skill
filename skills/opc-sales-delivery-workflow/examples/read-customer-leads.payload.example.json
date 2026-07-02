@@ -1,0 +1,7 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_customer_leads",
+  "viewId": "vew_active_leads",
+  "limit": 100,
+  "fieldIds": ["客户", "阶段", "预计金额", "负责人", "下一步"]
+}

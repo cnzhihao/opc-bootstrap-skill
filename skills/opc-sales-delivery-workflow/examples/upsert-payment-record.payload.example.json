@@ -1,0 +1,14 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_payment_records",
+  "matchField": "回款编号",
+  "matchValue": "PAY-2026-001",
+  "fields": {
+    "回款编号": "PAY-2026-001",
+    "客户": "示例客户",
+    "项目": "OPC 内容工厂搭建",
+    "金额": 15000,
+    "应回款日期": "2026-01-10",
+    "状态": "待回款"
+  }
+}

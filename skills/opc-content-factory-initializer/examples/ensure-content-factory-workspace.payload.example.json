@@ -1,0 +1,7 @@
+{
+  "folderName": "05 自媒体内容工厂",
+  "parentToken": "",
+  "dryRunNotes": [
+    "示例 payload 不包含真实 parentToken；execute 前应替换为目标飞书父文件夹 token，或确认允许创建到默认位置。"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "title": "归档稿件优化版本",
+  "contentMarkdown": "归档稿件优化版本 示例内容",
+  "documentId": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "归档稿件优化版本",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "归档稿件优化版本",
+    "状态": "示例"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_delivery_projects",
+  "recordId": "recxxxxxxxxxxxxxxx",
+  "fields": {
+    "状态": "验收中",
+    "下一里程碑": "客户确认交付清单",
+    "最近进展": "已完成周报与口播稿模板"
+  }
+}

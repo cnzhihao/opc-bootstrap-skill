@@ -1,0 +1,7 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_open_decisions",
+  "viewId": "vew_open_only",
+  "limit": 50,
+  "fieldIds": ["决策", "负责人", "截止时间", "阻塞", "状态"]
+}

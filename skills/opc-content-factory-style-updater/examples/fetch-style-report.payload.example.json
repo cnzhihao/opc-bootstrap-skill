@@ -1,0 +1,14 @@
+{
+  "title": "fetch style report",
+  "contentMarkdown": "fetch-style-report 示例内容",
+  "documentId": "doc_token_here",
+  "docToken": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "fetch style report",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "fetch-style-report",
+    "状态": "示例"
+  }
+}

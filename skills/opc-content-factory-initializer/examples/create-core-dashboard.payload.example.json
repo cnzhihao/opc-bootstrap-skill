@@ -1,0 +1,36 @@
+{
+  "folderToken": "REPLACE_WITH_CONTENT_FACTORY_ROOT_FOLDER_TOKEN",
+  "base": {
+    "name": "内容工厂核心看板",
+    "tables": [
+      {
+        "name": "选题池",
+        "fields": [
+          { "name": "选题标题", "type": "text" },
+          { "name": "生命周期阶段", "type": "single_select", "options": ["待评估", "已立项", "生产中", "待发布", "已发布", "复盘完成"] },
+          { "name": "内容形态", "type": "multi_select", "options": ["公众号长文", "长视频", "短视频", "小红书", "知乎", "朋友圈"] },
+          { "name": "负责人", "type": "user" },
+          { "name": "优先级", "type": "single_select", "options": ["P0", "P1", "P2"] },
+          { "name": "截止日期", "type": "date" },
+          { "name": "素材链接", "type": "url" }
+        ],
+        "views": ["全部选题", "本周生产", "待复盘"]
+      },
+      {
+        "name": "发布日历",
+        "fields": [
+          { "name": "内容标题", "type": "text" },
+          { "name": "平台", "type": "single_select", "options": ["公众号", "视频号", "知乎", "小红书", "其他"] },
+          { "name": "计划发布时间", "type": "date" },
+          { "name": "发布状态", "type": "single_select", "options": ["待排期", "待发布", "已发布", "已复盘"] },
+          { "name": "发布链接", "type": "url" },
+          { "name": "核心数据", "type": "text" }
+        ],
+        "views": ["发布日历", "按平台"]
+      }
+    ]
+  },
+  "dryRunNotes": [
+    "示例只覆盖核心表结构；执行前可按 lark-base 字段类型约定调整 type/options。"
+  ]
+}

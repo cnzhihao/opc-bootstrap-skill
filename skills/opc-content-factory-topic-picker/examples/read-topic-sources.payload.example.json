@@ -1,0 +1,15 @@
+{
+  "sources": [
+    {
+      "type": "docx",
+      "name": "示例文档",
+      "token": "doc_token_here"
+    },
+    {
+      "type": "base",
+      "name": "示例表",
+      "appToken": "app_token_here",
+      "tableId": "tbl_token_here"
+    }
+  ]
+}

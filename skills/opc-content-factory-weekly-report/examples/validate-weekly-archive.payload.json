@@ -1,0 +1,31 @@
+{
+  "week": {
+    "year": 2026,
+    "month": 6,
+    "weekNumber": 4,
+    "weekCode": "2026-06-W4",
+    "monthFolderName": "2026-06",
+    "dateRange": "2026-06-22~2026-06-28",
+    "title": "从交付经验提炼内容资产"
+  },
+  "archive": {
+    "monthFolderToken": "fld_example_month"
+  },
+  "documents": [
+    {
+      "kind": "content-weekly-report",
+      "title": "2026-06-W4｜内容工厂周报｜从交付经验提炼内容资产",
+      "token": "docx_report"
+    },
+    {
+      "kind": "article-draft",
+      "title": "2026-06-W4｜内容工厂发布稿｜为什么创始人要把交付写成方法论",
+      "token": "docx_article"
+    },
+    {
+      "kind": "video-script",
+      "title": "2026-06-W4｜长视频口播稿｜把交付变成内容飞轮",
+      "token": "docx_video"
+    }
+  ]
+}

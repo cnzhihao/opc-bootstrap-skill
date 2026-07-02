@@ -1,0 +1,16 @@
+{
+  "base": {
+    "appToken": "app_token_here",
+    "tableId": "tbl_token_here"
+  },
+  "topic": {
+    "title": "示例选题",
+    "status": "候选",
+    "score": 8
+  },
+  "fields": {
+    "选题": "示例选题",
+    "状态": "候选",
+    "评分": 8
+  }
+}

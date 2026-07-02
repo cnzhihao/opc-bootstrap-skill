@@ -1,0 +1,15 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_delivery_projects",
+  "matchField": "项目编号",
+  "matchValue": "PRJ-2026-001",
+  "fields": {
+    "项目编号": "PRJ-2026-001",
+    "项目": "OPC 内容工厂搭建",
+    "客户": "示例客户",
+    "状态": "交付中",
+    "下一里程碑": "完成首版周报模板",
+    "负责人": "智昊",
+    "合同额": 30000
+  }
+}

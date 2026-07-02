@@ -1,0 +1,13 @@
+{
+  "title": "创建访谈工作空间",
+  "contentMarkdown": "创建访谈工作空间 示例内容",
+  "documentId": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "创建访谈工作空间",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "创建访谈工作空间",
+    "状态": "示例"
+  }
+}

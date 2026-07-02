@@ -1,0 +1,19 @@
+{
+  "week": {
+    "year": 2026,
+    "month": 6,
+    "weekNumber": 4,
+    "weekCode": "2026-06-W4",
+    "monthFolderName": "2026-06",
+    "dateRange": "2026-06-22~2026-06-28",
+    "title": "从交付经验提炼内容资产"
+  },
+  "archive": {
+    "monthFolderToken": "fld_example_month"
+  },
+  "video": {
+    "title": "把交付变成内容飞轮",
+    "format": "talking_head_script",
+    "markdown": "# 把交付变成内容飞轮\n\n## 开场\n今天聊一个创始人必须做的动作。"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "title": "样例A",
+      "text": "示例内容A",
+      "score": 7
+    },
+    {
+      "title": "样例B",
+      "text": "示例内容B",
+      "score": 5
+    }
+  ],
+  "findings": [
+    "样例数据，仅用于 smoke test"
+  ]
+}

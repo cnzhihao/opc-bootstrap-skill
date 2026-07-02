@@ -1,0 +1,35 @@
+{
+  "rootToken": "REPLACE_WITH_CONTENT_FACTORY_ROOT_FOLDER_TOKEN",
+  "folderTokenMap": {
+    "01_选题池/待评估": "REPLACE_WITH_TOPIC_EVALUATION_FOLDER_TOKEN",
+    "02_素材库/创始人访谈": "REPLACE_WITH_INTERVIEW_FOLDER_TOKEN",
+    "03_稿件生产中/文章草稿": "REPLACE_WITH_ARTICLE_DRAFT_FOLDER_TOKEN",
+    "03_稿件生产中/口播脚本": "REPLACE_WITH_SCRIPT_FOLDER_TOKEN",
+    "05_数据复盘/周复盘": "REPLACE_WITH_WEEKLY_REVIEW_FOLDER_TOKEN"
+  },
+  "docs": [
+    {
+      "title": "内容工厂｜选题评估模板",
+      "folderTokenKey": "01_选题池/待评估"
+    },
+    {
+      "title": "内容工厂｜深度访谈模板",
+      "folderTokenKey": "02_素材库/创始人访谈"
+    },
+    {
+      "title": "内容工厂｜长文章写作模板",
+      "folderTokenKey": "03_稿件生产中/文章草稿"
+    },
+    {
+      "title": "内容工厂｜长视频口播稿模板",
+      "folderTokenKey": "03_稿件生产中/口播脚本"
+    },
+    {
+      "title": "内容工厂｜发布复盘模板",
+      "folderTokenKey": "05_数据复盘/周复盘"
+    }
+  ],
+  "dryRunNotes": [
+    "示例 folderTokenMap 需要替换为真实生命周期子目录 token；未命中的文档会退回 rootToken。"
+  ]
+}

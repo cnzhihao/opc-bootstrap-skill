@@ -1,0 +1,13 @@
+{
+  "archive": {
+    "folderToken": "folder_token_here",
+    "namingFormat": "{date}｜选题卡｜{title}"
+  },
+  "topic": {
+    "title": "示例选题分析",
+    "pillar": "内容工厂"
+  },
+  "note": {
+    "markdown": "# 示例选题分析\n正文"
+  }
+}

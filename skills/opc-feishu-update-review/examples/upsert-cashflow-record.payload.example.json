@@ -1,0 +1,15 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxxxxxxx",
+  "tableId": "tblxxxxxxxxxxxxxx",
+  "fields": {
+    "record_name": "2026-01 customer A first payment",
+    "customer": "Customer A",
+    "amount": 50000,
+    "currency": "CNY",
+    "cashflow_type": "inflow",
+    "status": "expected",
+    "due_date": "2026-01-20",
+    "owner": "OPC founder"
+  },
+  "dryRunNotes": ["Replace baseToken/tableId and field names with the target Base schema before --execute."]
+}

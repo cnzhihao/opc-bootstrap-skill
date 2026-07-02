@@ -1,0 +1,16 @@
+{
+  "week": {
+    "year": 2026,
+    "month": "2026-07",
+    "weekNumber": "W1",
+    "weekCode": "2026-07-W1",
+    "monthFolderName": "2026-07"
+  },
+  "archive": {
+    "monthFolderToken": "folder_token_here"
+  },
+  "video": {
+    "title": "示例口播稿",
+    "markdown": "# 示例口播稿\n正文"
+  }
+}

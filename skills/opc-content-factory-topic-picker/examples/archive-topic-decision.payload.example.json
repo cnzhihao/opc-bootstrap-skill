@@ -1,0 +1,21 @@
+{
+  "archive": {
+    "folderToken": "folder_token_here",
+    "namingFormat": "{date}｜选题决策｜{title}"
+  },
+  "topic": {
+    "title": "示例选题决策",
+    "pillar": "内容工厂"
+  },
+  "decision": {
+    "status": "进入生产",
+    "reason": "示例理由",
+    "nextAction": "进入访谈与大纲阶段",
+    "title": "示例选题决策"
+  },
+  "contentMarkdown": "# 示例选题决策\n\n- 状态：进入生产\n- 理由：示例理由",
+  "document": {
+    "title": "示例选题决策",
+    "markdown": "# 示例选题决策\n\n- 状态：进入生产\n- 理由：示例理由"
+  }
+}

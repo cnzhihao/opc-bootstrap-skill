@@ -1,0 +1,16 @@
+{
+  "baseToken": "EWdobLUjBahCW0sPsjFcmK6Nnle",
+  "tableId": "tblL3SUvEp6xKFYL",
+  "fields": {
+    "原始内容": "脚本真实写入测试：append-inbox-item.mjs",
+    "类型": "系统测试",
+    "状态": "待处理",
+    "优先级": "低",
+    "是否进入本周主战役": false,
+    "下一步动作": "用户检查后可删除或保留此测试记录",
+    "备注": "由 opc-feishu-update-review/scripts/append-inbox-item.mjs 写入"
+  },
+  "dryRunNotes": [
+    "这是用于验证 append-inbox-item.mjs 的真实写入测试 payload。"
+  ]
+}

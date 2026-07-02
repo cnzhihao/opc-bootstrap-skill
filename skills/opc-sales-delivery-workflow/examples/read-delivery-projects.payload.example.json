@@ -1,0 +1,7 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_delivery_projects",
+  "viewId": "vew_active_projects",
+  "limit": 100,
+  "fieldIds": ["项目", "客户", "状态", "下一里程碑", "负责人", "合同额"]
+}

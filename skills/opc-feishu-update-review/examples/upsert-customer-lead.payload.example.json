@@ -1,0 +1,17 @@
+{
+  "baseToken": "base_token_here",
+  "tableId": "customer_leads_table_id_here",
+  "recordId": "optional_existing_record_id_here",
+  "fields": {
+    "客户名称": "示例客户 A",
+    "线索阶段": "初步沟通",
+    "线索来源": "脑内清空池 / 周复盘派生",
+    "需求摘要": "希望梳理企业 AI 工作流并评估首个落地场景。",
+    "下一步": "约 30 分钟需求澄清会",
+    "负责人": "智昊",
+    "优先级": "P1"
+  },
+  "dryRunNotes": [
+    "示例 payload；真实写入前替换 baseToken、tableId、recordId 与字段名。"
+  ]
+}

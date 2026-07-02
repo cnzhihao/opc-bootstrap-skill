@@ -1,0 +1,19 @@
+{
+  "week": {
+    "monthFolderName": "2026-07",
+    "weekCode": "2026-07-W1"
+  },
+  "sources": [
+    {
+      "type": "base",
+      "name": "内容看板",
+      "appToken": "app_token_here",
+      "tableId": "tbl_token_here"
+    },
+    {
+      "type": "docx",
+      "name": "周记录",
+      "token": "doc_token_here"
+    }
+  ]
+}

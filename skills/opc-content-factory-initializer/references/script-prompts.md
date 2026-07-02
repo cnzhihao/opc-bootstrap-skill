@@ -18,16 +18,17 @@
 
 ## 脚本清单
 
-| 脚本 | 用途 | 类型 |
-|---|---|---|
-| `scripts/ensure-content-factory-workspace.mjs` | 查找或创建「05 自媒体内容工厂」工作空间 | 飞书云盘 |
-| `scripts/ensure-lifecycle-folders.mjs` | 创建或补齐内容生命周期目录 | 飞书云盘 |
-| `scripts/create-template-docs.mjs` | 创建访谈、选题、发布稿、复盘模板文档 | 飞书云文档 |
-| `scripts/create-core-boards.mjs` | 创建或补齐核心看板 / 多维表格 | 飞书多维表格 |
-| `scripts/validate-content-factory-workspace.mjs` | 校验目录、模板、看板完整性 | 飞书读取 |
+| 脚本 | 状态 | 用途 | 类型 |
+|---|---|---|---|
+| `scripts/ensure-content-factory-workspace.mjs` | 已实现 MVP | 查找或创建「05 自媒体内容工厂」工作空间 | 飞书云盘 |
+| `scripts/ensure-lifecycle-folders.mjs` | 待实现 | 创建或补齐内容生命周期目录 | 飞书云盘 |
+| `scripts/create-template-docs.mjs` | 待实现 | 创建访谈、选题、发布稿、复盘模板文档 | 飞书云文档 |
+| `scripts/create-core-boards.mjs` | 待实现 | 创建或补齐核心看板 / 多维表格 | 飞书多维表格 |
+| `scripts/validate-content-factory-workspace.mjs` | 待实现 | 校验目录、模板、看板完整性 | 飞书读取 |
 
 ## 运行约定
 
+- `ensure-content-factory-workspace.mjs` 的云盘命令依据 `lark-drive` Skill：真实执行时先调用 `lark-cli drive +search --as user --query <folderName>` 检查是否已存在；缺失时再调用 `lark-cli drive +create-folder --as user --name <folderName>`，如指定父目录则追加 `--parent-token <folder_token>`。
 - 飞书 CLI 脚本默认使用 `.mjs`。
 - 执行命令使用 `$BOX_AGENT_NODE`。
 - 脚本内部调用飞书 CLI 时必须显式使用 `--as user`。

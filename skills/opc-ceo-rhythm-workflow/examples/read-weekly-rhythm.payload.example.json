@@ -1,0 +1,8 @@
+{
+  "baseToken": "bascnxxxxxxxxxxxxxxx",
+  "tableId": "tbl_weekly_rhythm",
+  "viewId": "vew_current_week",
+  "limit": 50,
+  "fieldIds": ["事项", "负责人", "状态", "阻塞", "截止时间"],
+  "weekLabel": "2026-W01"
+}

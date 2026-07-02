@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "name": "客户访谈记录",
+      "type": "docx",
+      "token": "docx_interview_example",
+      "format": "markdown",
+      "extractionHint": "提取痛点、原话、交付场景"
+    },
+    {
+      "name": "选题池",
+      "type": "base",
+      "appToken": "bascn_topic",
+      "tableId": "tbl_topic",
+      "viewId": "vew_candidates",
+      "filter": "CurrentValue.[状态] = \"候选\""
+    },
+    {
+      "name": "内容素材文件夹",
+      "type": "drive-folder",
+      "folderToken": "fld_topic_assets"
+    }
+  ]
+}

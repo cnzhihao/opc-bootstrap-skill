@@ -1,0 +1,20 @@
+{
+  "base": {
+    "appToken": "bascn_topic",
+    "tableId": "tbl_topic"
+  },
+  "topic": {
+    "title": "创始人如何把交付沉淀成内容资产",
+    "pillar": "交付方法论",
+    "audience": "知识型创业者",
+    "tension": "会交付但不会表达",
+    "status": "候选",
+    "score": 8.4,
+    "sources": [
+      "客户访谈A",
+      "本周复盘"
+    ],
+    "noteUrl": "https://example.feishu.cn/docx/example",
+    "nextStep": "进入深度访谈"
+  }
+}

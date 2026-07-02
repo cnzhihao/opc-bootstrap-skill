@@ -1,0 +1,9 @@
+{
+  "base": {
+    "appToken": "bascn_topic",
+    "tableId": "tbl_topic",
+    "viewId": "vew_candidates"
+  },
+  "filter": "CurrentValue.[状态] = \"候选\"",
+  "pageSize": 50
+}

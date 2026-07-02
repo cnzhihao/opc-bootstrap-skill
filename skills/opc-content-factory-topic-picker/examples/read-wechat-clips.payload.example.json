@@ -1,0 +1,13 @@
+{
+  "title": "读取微信剪藏素材记录",
+  "contentMarkdown": "读取微信剪藏素材记录 示例内容",
+  "documentId": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "读取微信剪藏素材记录",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "读取微信剪藏素材记录",
+    "状态": "示例"
+  }
+}

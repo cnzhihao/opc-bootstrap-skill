@@ -1,0 +1,13 @@
+{
+  "title": "创建内容工厂核心看板记录",
+  "contentMarkdown": "创建内容工厂核心看板记录 示例内容",
+  "documentId": "doc_token_here",
+  "parentToken": "folder_token_here",
+  "folderName": "创建内容工厂核心看板记录",
+  "baseToken": "app_token_here",
+  "tableId": "tbl_token_here",
+  "fields": {
+    "名称": "创建内容工厂核心看板记录",
+    "状态": "示例"
+  }
+}

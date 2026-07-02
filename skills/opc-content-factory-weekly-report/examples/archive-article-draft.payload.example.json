@@ -1,0 +1,16 @@
+{
+  "week": {
+    "year": 2026,
+    "month": "2026-07",
+    "weekNumber": "W1",
+    "weekCode": "2026-07-W1",
+    "monthFolderName": "2026-07"
+  },
+  "archive": {
+    "monthFolderToken": "folder_token_here"
+  },
+  "article": {
+    "title": "示例长文章",
+    "markdown": "# 示例长文章\n正文"
+  }
+}

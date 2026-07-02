@@ -1,0 +1,16 @@
+{
+  "baseToken": "base_token_here",
+  "tableId": "table_id_here",
+  "recordId": "",
+  "fields": {
+    "周期": "2026-W01",
+    "本周主战役": "完成脚本化 MVP 标准沉淀",
+    "杠杆动作": "跑通 Base record upsert 模板",
+    "48 小时突破点": "完成 dry-run 与真实执行前确认",
+    "状态": "推进中"
+  },
+  "dryRunNotes": [
+    "示例 payload 使用占位 baseToken/tableId；execute 前必须替换为真实飞书 Base 参数。",
+    "如需更新已有记录，请填写 recordId；留空则按 lark-base +record-upsert 创建新记录。"
+  ]
+}
